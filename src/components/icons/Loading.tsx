@@ -1,5 +1,15 @@
-import { LoadingProps } from '../../global/types'
+import { Flex, Spinner } from '@chakra-ui/react'
 
-export const Loading = ({ type = 'loading-spinner', size = 'loading-lg' }: LoadingProps) => {
-  return <span className={`loading ${type} ${size} mx-auto`}></span>
+export const Loading = ({ height='100vh', size='xl', align='center', justify='center' }: { height?: string, size?: string, align?: string, justify?: string }) => {
+  return (
+    <Flex h={height} alignItems={align} justifyContent={justify}>
+      <Spinner
+        thickness='4px'
+        speed='0.65s'
+        emptyColor='gray.200'
+        color='teal.500'
+        size={size}
+      />
+    </Flex>
+  )
 }

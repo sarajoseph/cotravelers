@@ -93,6 +93,6 @@ export const UsernameField = ({register, initialRef}: {register?: UseFormRegiste
   )
 }
 
-export const ErrorFieldMessage = ({message}: {message: string | undefined }) => (
-  <Alert status='warning'><AlertIcon />{message ?? 'Error'}</Alert>
+export const ErrorFieldMessage = ({message, status='warning'}: {message: string | undefined, status?: 'warning' | 'info' | 'success' | 'error' | 'loading' | undefined}) => (
+  <Alert status={status}><AlertIcon />{message ?? 'Error'}</Alert>
 )

@@ -3,13 +3,10 @@ export type FormRegisterInputs = {
   email: string
   password: string
 }
-export type LoadingProps = {
-  type?: 'loading-spinner' | 'loading-dots' | 'loading-ring' | 'loading-ball' | 'loading-bars' | 'loading-infinity'
-  size?: 'loading-xs' | 'loading-sm' | 'loading-md' | 'loading-lg'
-}
 export type UserProps = {
   username: string,
-  email: string
+  email: string,
+  avatar: string
 }
 export type UserStore = UserProps & {
   userIsLogin: boolean
@@ -17,4 +14,16 @@ export type UserStore = UserProps & {
   setEmail: (email: UserProps['email']) => void
   setUserIsLogin: (userIsLogin: UserStore['userIsLogin']) => void
   resetUser: () => void
+  setAvatar: (avatar: UserProps['avatar']) => void
+}
+export type FormProfileInputs = {
+  username: string
+  email: string
+  avatar: string
+  name: string
+  surname: string
+  birthday: string
+  bio: string
+  hobbies: string[]
+  countries: string[]
 }

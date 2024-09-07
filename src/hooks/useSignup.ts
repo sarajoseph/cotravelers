@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createUserWithEmailAndPassword, sendEmailVerification, signOut, updateProfile } from 'firebase/auth'
 import { useState } from 'react'
-import { authFirebase } from '../firebase/client'
+import { authFirebase, db } from '../firebase/client'
 import { FieldValues } from 'react-hook-form'
 import { FirebaseError } from 'firebase/app'
 import { getFirebaseErrorMessage } from '../global/logic'
 import { errorMessageInitialValue } from '../global/constants'
+import { doc, setDoc } from 'firebase/firestore'
 
 
 export const useSignup = () => {
@@ -27,6 +28,16 @@ export const useSignup = () => {
           await updateProfile(authFirebase.currentUser, { displayName })
           if (authFirebase.currentUser) {
             await sendEmailVerification(authFirebase.currentUser)
+            await setDoc(doc(db, 'users', authFirebase.currentUser.uid), {
+              type: 'common',
+              verified: false,
+              name: '',
+              surname: '',
+              birthday: '',
+              bio: '',
+              hobbies: '',
+              countries: '',
+            })
           }
           await signOut(authFirebase)
           setIsLoading(false)
