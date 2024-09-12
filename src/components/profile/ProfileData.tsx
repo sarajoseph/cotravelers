@@ -4,6 +4,7 @@ import { Verified } from '../icons/Verified'
 import { useUser } from '../../hooks/useUser'
 import { useHobbies } from '../../hooks/useHobbies'
 import { DocumentData } from 'firebase/firestore'
+import { WorldMap } from '../WorldMap'
 
 export const ProfileData = () => {
   const { userData } = useUser()
@@ -34,18 +35,18 @@ export const ProfileData = () => {
 
         <Flex flexDirection='column' rowGap='5' mt='10'>
           <Box>
-            <Heading size='xs' textTransform='uppercase'>
+            <Heading size='xs' textTransform='uppercase' mb={3}>
               Bio
             </Heading>
-            <Text pt='2' fontSize='sm'>
+            <Text fontSize='sm'>
               {userData?.bio}
             </Text>
           </Box>
           <Box>
-            <Heading size='xs' textTransform='uppercase'>
+            <Heading size='xs' textTransform='uppercase' mb={3}>
               Hobbies
             </Heading>
-            <Flex gap={4} mt='3' wrap='wrap'>
+            <Flex gap={4} wrap='wrap'>
               {
                 (hobbies && userData.hobbies !== undefined) &&
                   (userData.hobbies).map((hobby: string) => {
@@ -62,12 +63,10 @@ export const ProfileData = () => {
             </Flex>
           </Box>
           <Box>
-            <Heading size='xs' textTransform='uppercase'>
-              Countries
+            <Heading size='xs' textTransform='uppercase' mb={3}>
+              Countries visited
             </Heading>
-            <Text pt='2' fontSize='sm'>
-              {userData?.countries}
-            </Text>
+            <WorldMap countriesVisited={userData?.countries} />
           </Box>
         </Flex>
       </CardBody>

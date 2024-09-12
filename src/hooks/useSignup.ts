@@ -35,8 +35,8 @@ export const useSignup = () => {
               surname: '',
               birthday: '',
               bio: '',
-              hobbies: '',
-              countries: '',
+              hobbies: [],
+              countries: [],
             })
           }
           await signOut(authFirebase)

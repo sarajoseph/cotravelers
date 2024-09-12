@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form'
 import { FormProfileInputs } from '../../global/types'
 import { LoadingProfile } from '../icons/LoadingProfile'
 import { useHobbies } from '../../hooks/useHobbies'
+import { WorldMap } from '../WorldMap'
 
 export const EditProfileData = () => {
   const toast = useToast()
@@ -23,6 +24,7 @@ export const EditProfileData = () => {
   const [ hobbiesState, setHobbiesState ] = useState<string>()
   const [ errorUploadingAvatar, setErrorUploadingAvatar ] = useState<string | false>(false)
   const [ selectedHobbies, setSelectedHobbies ] = useState<string[]>()
+  const [ countriesVisited, setCountriesVisited ] = useState<string[]>(userData?.countries || [])
 
   useEffect(() => {
     // Set the value in react-hook-form
@@ -30,6 +32,7 @@ export const EditProfileData = () => {
     setValue('surname', userData?.surname || '')
     setValue('birthday', userData?.birthday || '')
     setSelectedHobbies(userData?.hobbies)
+    setCountriesVisited(userData?.countries || [])
   }, [userData, setValue])
 
   const handleAvatarOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,6 +92,23 @@ export const EditProfileData = () => {
     const hobbiesAreSaved = await handleSaveData('hobbies', selectedValues)
     setHobbiesState(hobbiesAreSaved ? 'success' : 'error')
     if (hobbiesAreSaved) setSelectedHobbies(selectedValues)
+  }
+
+  const handleClickCountry = async (countryName: string) => {
+    setCountriesVisited((prevCountriesVisited) => {
+      const selectedCountries = prevCountriesVisited.includes(countryName)
+        ? prevCountriesVisited.filter((name: string) => name !== countryName)
+        : [...prevCountriesVisited, countryName]
+
+      handleSaveData('countries', selectedCountries)
+      .then((countriesAreSaved) => {
+        if (!countriesAreSaved) console.log('Error al guardar los países')
+      }).catch((error) => {
+        console.log('Error en la operación de guardado:', error)
+      })
+
+      return selectedCountries
+    })
   }
 
   if (userData === null) return <LoadingProfile />
@@ -242,6 +262,15 @@ export const EditProfileData = () => {
               )}
             </Stack>
           </CheckboxGroup>
+        </FormControl>
+        <FormControl>
+          <Flex alignItems='center' mb='5'>
+            <FormLabel mb='0'>Countries visited</FormLabel>
+          </Flex>
+          <WorldMap
+            countriesVisited={countriesVisited}
+            handleClickCountry={handleClickCountry}
+          />
         </FormControl>
       </CardBody>
     </Card>
