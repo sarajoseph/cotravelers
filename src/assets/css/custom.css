@@ -1,0 +1,10 @@
+.custom-menu-item:hover {
+  background-color: transparent;
+  color: teal;
+}
+.custom-menu-item:focus {
+  background-color: transparent;
+}
+.custom-menu-item:active {
+  background-color: transparent;
+}

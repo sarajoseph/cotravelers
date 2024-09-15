@@ -17,7 +17,7 @@ export const WorldMap = ({countriesVisited, handleClickCountry}:
       <MapContainer
         center={position}
         zoom={zoomLevel}
-        style={{ height: '100%', width: '100%' }}
+        className='custom-map'
         scrollWheelZoom={false}
         dragging={false}
         zoomControl={false}

@@ -14,7 +14,7 @@ export const ProfileData = () => {
   return (
     <Card>
       <CardHeader>
-        <Heading size='md'>Your profile</Heading>
+        <Heading as='h2' size='md'>Your profile</Heading>
       </CardHeader>
       <CardBody>
         <Flex columnGap='5'>
@@ -25,7 +25,7 @@ export const ProfileData = () => {
           />
           <Flex flexDirection='column' justifyContent='center'>
             <Flex columnGap='1'>
-              <Heading as='h3' size='md'>@{userData?.username}</Heading>
+              <Text fontSize='xl' as='b'>@{userData?.username}</Text>
               {userData?.verified && <Verified />}
             </Flex>
             <p>{userData?.name +' '+ userData?.surname}</p>
@@ -35,15 +35,15 @@ export const ProfileData = () => {
 
         <Flex flexDirection='column' rowGap='5' mt='10'>
           <Box>
-            <Heading size='xs' textTransform='uppercase' mb={3}>
+            <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
               Bio
             </Heading>
-            <Text fontSize='sm'>
+            <Text>
               {userData?.bio}
             </Text>
           </Box>
           <Box>
-            <Heading size='xs' textTransform='uppercase' mb={3}>
+            <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
               Hobbies
             </Heading>
             <Flex gap={4} wrap='wrap'>
@@ -63,7 +63,7 @@ export const ProfileData = () => {
             </Flex>
           </Box>
           <Box>
-            <Heading size='xs' textTransform='uppercase' mb={3}>
+            <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
               Countries visited
             </Heading>
             <WorldMap countriesVisited={userData?.countries} />

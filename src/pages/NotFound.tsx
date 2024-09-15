@@ -1,7 +1,9 @@
+import { WebContainer } from './WebContainer'
+
 export const NotFound = () => {
   return (
-    <main>
+    <WebContainer>
       <h1>NotFound</h1>
-    </main>
+    </WebContainer>
   )
 }

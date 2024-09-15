@@ -43,7 +43,7 @@ export const useWorldMap = (countriesVisited: string[]) => {
     const countryName = e.target.feature.properties.name
     setHoveredCountry(countryName)
     e.target.bindPopup(countryName, {
-      className: 'custom-map-css',
+      className: 'custom-map-popup',
       closeButton: false,
       closeOnClick: false
     }).openPopup()

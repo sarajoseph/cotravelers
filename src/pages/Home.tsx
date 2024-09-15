@@ -1,14 +1,9 @@
-import { Footer } from '../components/Footer'
-import { Header } from '../components/header/Header'
+import { WebContainer } from './WebContainer'
 
 export const Home = () => {
   return (
-    <>
-    <Header />
-    <main>
+    <WebContainer>
       <h1>Home</h1>
-    </main>
-    <Footer />
-    </>
+    </WebContainer>
   )
 }

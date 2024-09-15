@@ -116,18 +116,18 @@ export const EditProfileData = () => {
   return (
     <Card>
       <CardHeader>
-        <Heading size='md'>Edit profile</Heading>
+        <Heading as='h2' size='md'>Edit profile</Heading>
       </CardHeader>
       <CardBody>
-        <FormControl>
+        <FormControl mb='8'>
           <FormLabel>Username</FormLabel>
           <Input id='editprofileUsername' size='md' type='text' value={userData?.username} readOnly />
         </FormControl>
-        <FormControl>
+        <FormControl mb='8'>
           <FormLabel>Email</FormLabel>
           <Input id='editprofileEmail' size='md' type='text' value={userData?.email} readOnly />
         </FormControl>
-        <FormControl isInvalid={!!errorUploadingAvatar}>
+        <FormControl mb='8' isInvalid={!!errorUploadingAvatar}>
           <FormLabel>Profile image</FormLabel>
           <Flex alignItems='center' columnGap='5'>
             <Image
@@ -154,7 +154,7 @@ export const EditProfileData = () => {
             }
           </Flex>
         </FormControl>
-        <FormControl isInvalid={!!errors.name}>
+        <FormControl mb='8' isInvalid={!!errors.name}>
           <FormLabel>Name</FormLabel>
           <InputGroup>
             <Input
@@ -178,7 +178,7 @@ export const EditProfileData = () => {
           </InputGroup>
           {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
         </FormControl>
-        <FormControl isInvalid={!!errors.surname}>
+        <FormControl mb='8' isInvalid={!!errors.surname}>
           <FormLabel>Surname</FormLabel>
           <InputGroup>
             <Input
@@ -202,7 +202,7 @@ export const EditProfileData = () => {
           </InputGroup>
           {errors.surname && <FormErrorMessage>{errors.surname.message}</FormErrorMessage>}
         </FormControl>
-        <FormControl isInvalid={!!errors.birthday}>
+        <FormControl mb='8' isInvalid={!!errors.birthday}>
           <FormLabel>Birthday</FormLabel>
           <InputGroup>
             <Input
@@ -224,11 +224,11 @@ export const EditProfileData = () => {
           </InputGroup>
           {errors.birthday && <FormErrorMessage>{errors.birthday.message}</FormErrorMessage>}
         </FormControl>
-        <FormControl>
+        <FormControl mb='8'>
           <FormLabel>Bio</FormLabel>
           <Textarea id='editprofileBio' placeholder='Describe yourself here...' defaultValue={userData?.bio} />
         </FormControl>
-        <FormControl>
+        <FormControl mb='8'>
           <Flex alignItems='center' mb='5'>
             <FormLabel mb='0'>Hobbies</FormLabel>
             {
@@ -263,7 +263,7 @@ export const EditProfileData = () => {
             </Stack>
           </CheckboxGroup>
         </FormControl>
-        <FormControl>
+        <FormControl mb='8'>
           <Flex alignItems='center' mb='5'>
             <FormLabel mb='0'>Countries visited</FormLabel>
           </Flex>
