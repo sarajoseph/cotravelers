@@ -2,20 +2,20 @@
 import { onAuthStateChanged, updateProfile, User } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 import { authFirebase, db } from '../firebase/client'
-import { UserProps } from '../global/types'
 import { useUserStore } from '../store/userStore'
 import { doc, DocumentData, getDoc, setDoc } from 'firebase/firestore'
 import { FirebaseError } from 'firebase/app'
 
-type UseUserProps = UserProps & {
-  userIsLogin: boolean,
+type SaveUserDataProps = {
+  photoURL?: string,
+  dataField?: string,
+  dataValue?: string | string[]
+  userUpdated?: DocumentData
+}
+type UseUserProps = {
+  user: DocumentData,
   firebaseIsLoading: boolean,
-  userData: DocumentData | null,
-  saveUserData: ({ photoURL, dataField, dataValue }: {
-      photoURL?: string
-      dataField?: string
-      dataValue?: string | string[]
-    }) => Promise<{
+  saveUserData: ({photoURL, dataField, dataValue}: SaveUserDataProps) => Promise<{
       saveUserDataSuccess: boolean
       saveUserDataErrorMessage?: undefined
     } | {
@@ -25,46 +25,38 @@ type UseUserProps = UserProps & {
   saveErrorMessage: string | false
 }
 
-type authUserDataProps = {
-  id: string | null
-  username: string | null
-  email: string | null
-  phoneNumber: string | null
-  photoURL: string | null
-}
-
 export const useUser = (): UseUserProps => {
   const [ firebaseIsLoading, setFirebaseIsLoading ] = useState<boolean>(true)
-  const user = useUserStore((state) => ({
-    username: state.username,
+  const user: DocumentData = useUserStore((state) => ({
+    avatar: state.avatar,
+    bio: state.bio,
+    birthday: state.birthday,
+    countries: state.countries,
     email: state.email,
+    hobbies: state.hobbies,
+    name: state.name,
+    public_email: state.public_email,
+    surname: state.surname,
+    type: state.type,
+    uid: state.uid,
     userIsLogin: state.userIsLogin,
-    avatar: state.avatar
+    username: state.username,
+    verified: state.verified,
   }))
-  const setUsername = useUserStore((state) => state.setUsername)
-  const setEmail = useUserStore((state) => state.setEmail)
-  const setUserIsLogin = useUserStore((state) => state.setUserIsLogin)
-  const resetUser = useUserStore((state) => state.resetUser)
   const setAvatar = useUserStore((state) => state.setAvatar)
-  const [ userData, setUserData ] = useState<DocumentData | null>(null)
+  const setUserIsLogin = useUserStore((state) => state.setUserIsLogin)
+  const setUserDataStore = useUserStore((state) => state.setUserData)
+  const resetUser = useUserStore((state) => state.resetUser)
 
   useEffect(() => {
     const authStateChanged = onAuthStateChanged(authFirebase, async (firebaseUser) => {
       setFirebaseIsLoading(true)
       if (firebaseUser && firebaseUser.emailVerified) {
-        const firebaseUserDisplayName = firebaseUser.displayName || ''
-        const firebaseUserEmail = firebaseUser.email || ''
-        const firebaseUserAvatar = firebaseUser.photoURL || ''
-
-        // Update user state
-        setUsername(firebaseUserDisplayName)
-        setEmail(firebaseUserEmail)
         setUserIsLogin(true)
-        setAvatar(firebaseUserAvatar)
 
         // Fetch user data from Firestore
         const data = await getUserData()
-        setUserData(data)
+        setUserDataStore(data)
 
       } else {
         resetUser()
@@ -82,26 +74,18 @@ export const useUser = (): UseUserProps => {
       console.log('No user with login')
       return null
     }
-    const authUserData: authUserDataProps = {
-      id: currentUser.displayName,
-      username: currentUser.displayName,
-      email: currentUser.email,
-      phoneNumber: currentUser.phoneNumber,
-      photoURL: currentUser.photoURL
-    }
 
     try {
       const docSnap = await getDoc(doc(db, 'users', currentUser.uid))
       if (docSnap.exists()) {
         const userFullData = {
-          ...authUserData,
           ...docSnap.data()
         }
         return userFullData
 
       } else {
         console.log('Not found')
-        return authUserData
+        return null
       }
 
     } catch (error) {
@@ -113,7 +97,8 @@ export const useUser = (): UseUserProps => {
 
   const [ saveErrorMessage, setSaveErrorMessage ] = useState<string | false>(false)
 
-  const saveUserData = async ({photoURL, dataField, dataValue}: {photoURL?: string, dataField?: string, dataValue?: string | string[]}) => {
+  const saveUserData = async ( {photoURL, dataField, dataValue, userUpdated}: SaveUserDataProps ) => {
+    const userData = userUpdated || user
     if (authFirebase.currentUser && userData !== undefined) {
       try {
         if (photoURL) {
@@ -121,18 +106,13 @@ export const useUser = (): UseUserProps => {
           setAvatar(photoURL)
         }
         const profileUserData = {
-          type: userData?.type,
-          verified: userData?.verified,
-          name: dataField === 'name' ? dataValue : userData?.name,
-          surname: dataField === 'surname' ? dataValue : userData?.surname,
-          birthday: dataField === 'birthday' ? dataValue : userData?.birthday,
-          bio: dataField === 'bio' ? dataValue : userData?.bio,
-          hobbies: dataField === 'hobbies' ? dataValue : userData?.hobbies,
-          countries: dataField === 'countries' ? dataValue : userData?.countries,
+          ...userData,
+          avatar: photoURL ? photoURL : userData.avatar,
+          ...(dataField && { [dataField]: dataValue })
         }
         await setDoc(doc(db, 'users', authFirebase.currentUser.uid), profileUserData)
         const data = await getUserData()
-        setUserData(data)
+        setUserDataStore(data)
 
         return { saveUserDataSuccess: true }
 
@@ -158,12 +138,8 @@ export const useUser = (): UseUserProps => {
   }
 
   return {
-    username: user.username,
-    email: user.email,
-    userIsLogin: user.userIsLogin,
-    avatar: user.avatar,
+    user,
     firebaseIsLoading,
-    userData,
     saveUserData,
     saveErrorMessage
   }

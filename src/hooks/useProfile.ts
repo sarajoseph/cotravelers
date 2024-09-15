@@ -1,14 +1,45 @@
 import { useState } from 'react'
 import { useUser } from './useUser'
-import { uploadFileFirebase } from '../firebase/client'
+import { db, uploadFileFirebase } from '../firebase/client'
+import { doc, getDoc } from 'firebase/firestore'
+import { FirebaseError } from 'firebase/app'
+import { useUserStore } from '../store/userStore'
 
 export const useProfile = () => {
-  const [ isEditProfile, setIsEditProfile ] = useState<boolean>(false)
   const [ uploadingAvatar, setUploadingAvatar ] = useState<boolean>(false)
-  const { userData, saveUserData } = useUser()
+  const { saveUserData } = useUser()
+  const user = useUserStore((state) => ({
+    uid: state.uid
+  }))
 
-  const toggleEditProfile = () => {
-    setIsEditProfile((prev) => !prev)
+  const getProfileByUID = async (uid: string) => {
+    try {
+      const docSnap = await getDoc(doc(db, 'users', uid))
+      if (docSnap.exists()) {
+        const userFullData = {
+          ...docSnap.data()
+        }
+        return {
+          success: true,
+          profile: userFullData
+        }
+
+      } else {
+        console.log('Not found')
+        return {
+          success: false,
+          errorMessage: 'Not found'
+        }
+      }
+
+    } catch (error) {
+      const firebaseError = error as FirebaseError
+      console.log(firebaseError)
+      return {
+        success: false,
+        errorMessage: firebaseError
+      }
+    }
   }
 
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +57,7 @@ export const useProfile = () => {
 
     setUploadingAvatar(true)
     // Save image in firebase storage
-    const { imageUrl, uploadFileFirebaseErrorMessage } = await uploadFileFirebase(imageFile, userData?.id)
+    const { imageUrl, uploadFileFirebaseErrorMessage } = await uploadFileFirebase(imageFile, user.uid)
     if (imageUrl) {
       // Save image in firestore database collection
       const { saveUserDataSuccess, saveUserDataErrorMessage } = await saveUserData({photoURL: imageUrl})
@@ -47,11 +78,6 @@ export const useProfile = () => {
       handleUploadImageSuccess: false,
       handleUploadImageErrorMessage: uploadFileFirebaseErrorMessage
     }
-  }
-
-  const handleSaveData = async (dataField: string, dataValue: string | string[]) => {
-    const { saveUserDataSuccess } = await saveUserData({dataField, dataValue})
-    return saveUserDataSuccess
   }
 
   const validateBirthday = (value: string) => {
@@ -99,11 +125,9 @@ export const useProfile = () => {
   }
 
   return {
-    isEditProfile,
-    toggleEditProfile,
-    handleSaveData,
     handleUploadImage,
     uploadingAvatar,
-    validateBirthday
+    validateBirthday,
+    getProfileByUID
   }
 }

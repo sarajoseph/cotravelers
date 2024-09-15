@@ -2,12 +2,18 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Home } from './Home'
 import { NotFound } from './NotFound'
 import { Profile } from './Profile'
-import { PrivateRoutes } from '../components/utils/ProtectedRoutes'
+import { PrivateRoutes, PublicRoutes } from '../components/utils/ProtectedRoutes'
 import { useUser } from '../hooks/useUser'
 import { Loading } from '../components/icons/Loading'
+import { EditProfile } from './EditProfile'
+import { useUserStore } from '../store/userStore'
 
 export const App = () => {
-  const { firebaseIsLoading, userIsLogin } = useUser()
+  const { firebaseIsLoading } = useUser()
+  const user = useUserStore((state) => ({
+    userIsLogin: state.userIsLogin
+  }))
+  const userIsLogin = user.userIsLogin
 
   if (firebaseIsLoading) return <Loading />
 
@@ -22,7 +28,18 @@ export const App = () => {
       errorElement: <NotFound />,
       children: [
         {
-          path: '/profile',
+          path: '/edit-profile',
+          element: <EditProfile />,
+          errorElement: <NotFound />
+        },
+      ]
+    },
+    {
+      element: <PublicRoutes />,
+      errorElement: <NotFound />,
+      children: [
+        {
+          path: '/profile/:uid',
           element: <Profile />,
           errorElement: <NotFound />
         },

@@ -597,20 +597,12 @@ video {
   height: 1.5rem;
 }
 
-.flex-row {
-  flex-direction: row;
-}
-
 .flex-col {
   flex-direction: column;
 }
 
 .\!items-start {
   align-items: flex-start !important;
-}
-
-.justify-between {
-  justify-content: space-between;
 }
 
 .gap-2 {
@@ -642,6 +634,10 @@ video {
 
 .opacity-70 {
   opacity: 0.7;
+}
+
+.outline {
+  outline-style: solid;
 }
 
 .filter {

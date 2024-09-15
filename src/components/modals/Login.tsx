@@ -13,6 +13,7 @@ import {
   AlertIcon,
   Alert,
   Flex,
+  Heading,
 } from '@chakra-ui/react'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { useConfirmationEmail } from '../../hooks/useConfirmationEmail'
@@ -38,8 +39,8 @@ export const Login = ({isOpen, onClose, openSignupModal, openResetPasswordModal}
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <h2 className='text-2xl'>Welcome to Cotravelers</h2>
-          <h3 className='text-lg'>Login below</h3>
+          <Heading as='h2' fontSize='2xl' pb='1'>Welcome to Cotravelers</Heading>
+          <Heading as='h3' fontSize='md'>Login below</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>

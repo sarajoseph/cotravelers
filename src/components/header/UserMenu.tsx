@@ -1,19 +1,28 @@
 import { Button, useDisclosure, Avatar, Menu, MenuButton, MenuDivider, MenuGroup, MenuItem, MenuList, Text, Flex, IconButton } from '@chakra-ui/react'
 import { Login } from '../modals/Login'
 import { Signup } from '../modals/Signup'
-import { useUser } from '../../hooks/useUser'
 import { LogoutIcon } from '../icons/LogoutIcon'
 import { useLogout } from '../../hooks/useLogout'
 import { ResetPassword } from '../modals/ResetPassword'
 import { Link } from 'react-router-dom'
 import { HamburgerIcon } from '@chakra-ui/icons'
+import { useUserStore } from '../../store/userStore'
 
 export const UserMenu = () => {
   const loginModal = useDisclosure()
   const signupModal = useDisclosure()
   const resetPasswordModal = useDisclosure()
-  const { username, userIsLogin, avatar } = useUser()
-
+  const user = useUserStore((state) => ({
+    avatar: state.avatar,
+    uid: state.uid,
+    userIsLogin: state.userIsLogin,
+    username: state.username
+  }))
+  const avatar = user.avatar
+  const uid = user.uid
+  const userIsLogin = user.userIsLogin
+  const username = user.username
+  const userProfileLink = '/profile/'+uid
   return (
   <>
     <Menu closeOnSelect={false}>
@@ -55,13 +64,13 @@ export const UserMenu = () => {
               size='md'
             />
             <Flex direction='column' p='4'>
-              <Text>Hi <Link to={'/@'+username}><Text as='b'>@{username}</Text></Link>!</Text>
+              <Text>Hi <Link to={userProfileLink}><Text as='b'>@{username}</Text></Link>!</Text>
               <Link to={'/edit-profile'}>Edit profile</Link>
             </Flex>
           </Flex>
         </MenuGroup>
         <MenuGroup pt='4'>
-          <MenuItem className='custom-menu-item'><Link to={'/@'+username}>My Account</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={userProfileLink}>My Account</Link></MenuItem>
           <MenuItem className='custom-menu-item'>My trips</MenuItem>
           <MenuItem className='custom-menu-item'>Create a trip</MenuItem>
         </MenuGroup>

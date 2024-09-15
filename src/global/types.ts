@@ -4,17 +4,26 @@ export type FormRegisterInputs = {
   password: string
 }
 export type UserProps = {
-  username: string,
+  avatar: string,
+  bio: string,
+  birthday: string,
+  countries: string[],
   email: string,
-  avatar: string
+  hobbies: string[],
+  name: string,
+  public_email: string,
+  surname: string,
+  type: string,
+  uid: string,
+  userIsLogin: boolean,
+  username: string,
+  verified: string,
 }
 export type UserStore = UserProps & {
-  userIsLogin: boolean
-  setUsername: (username: UserProps['username']) => void
-  setEmail: (email: UserProps['email']) => void
-  setUserIsLogin: (userIsLogin: UserStore['userIsLogin']) => void
-  resetUser: () => void
   setAvatar: (avatar: UserProps['avatar']) => void
+  setUserIsLogin: (userIsLogin: UserProps['userIsLogin']) => void
+  setUserData: (data: any) => void
+  resetUser: () => void
 }
 export type FormProfileInputs = {
   username: string

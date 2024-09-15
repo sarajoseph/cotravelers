@@ -11,7 +11,8 @@ import {
   ModalCloseButton,
   Button,
   AlertIcon,
-  Alert
+  Alert,
+  Heading
 } from '@chakra-ui/react'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { handleCloseAndOpenModal, handleCloseModal } from '../../global/logic'
@@ -35,8 +36,8 @@ export const ResetPassword = ({isOpen, onClose, openLoginModal, openSignupModal}
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <h2 className='text-2xl'>Welcome to Cotravelers</h2>
-          <h3 className='text-base'>We will send you an email with a link to reset your password</h3>
+          <Heading as='h2' fontSize='2xl' pb='1'>Welcome to Cotravelers</Heading>
+          <Heading as='h3' fontSize='sm'>We will send you an email with a link to reset your password</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>

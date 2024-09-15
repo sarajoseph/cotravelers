@@ -29,6 +29,9 @@ export const useSignup = () => {
           if (authFirebase.currentUser) {
             await sendEmailVerification(authFirebase.currentUser)
             await setDoc(doc(db, 'users', authFirebase.currentUser.uid), {
+              username: displayName,
+              avatar: '',
+              public_email: '',
               type: 'common',
               verified: false,
               name: '',

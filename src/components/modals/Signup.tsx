@@ -13,7 +13,8 @@ import {
   ModalCloseButton,
   Button,
   Alert,
-  AlertIcon
+  AlertIcon,
+  Heading
 } from '@chakra-ui/react'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { handleCloseAndOpenModal, handleCloseModal } from '../../global/logic'
@@ -38,8 +39,8 @@ export const Signup = ({isOpen, onClose, openLoginModal}: {isOpen: boolean, onCl
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <h2 className='text-2xl'>Welcome to Cotravelers</h2>
-          <h3 className='text-lg'>Sign up below to start</h3>
+          <Heading as='h2' fontSize='2xl' pb='1'>Welcome to Cotravelers</Heading>
+          <Heading as='h3' fontSize='md'>Sign up below to start</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>

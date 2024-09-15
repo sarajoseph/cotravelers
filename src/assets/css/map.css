@@ -17,3 +17,12 @@
 .custom-map-popup .leaflet-popup-arrow {
   display: none;
 }
+.leaflet-control-container {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .custom-map {
+    height: 40vh;
+  }
+}
