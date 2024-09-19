@@ -26,12 +26,12 @@ export const uploadFileFirebase = async (file: Blob, userID: string) => {
     const storageRef = ref(storageFirebase, '/avatar/'+userID)
     await uploadBytes(storageRef, file)
     const imageUrl = await getDownloadURL(storageRef)
-    return { uploadFileFirebaseSuccess: true, imageUrl}
+    return { success: true, imageUrl}
 
   } catch (error) {
     const firebaseError = error as FirebaseError
     console.log(firebaseError.message)
-    return { uploadFileFirebaseSuccess: false, uploadFileFirebaseErrorMessage: firebaseError.message}
+    return { success: false, uploadFileFirebaseErrorMessage: firebaseError.message}
   }
 
 }

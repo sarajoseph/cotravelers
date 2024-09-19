@@ -22,12 +22,12 @@ export const Profile = () => {
     if (uid) {
       setCurrentProfileState('loading')
       const fetchProfile = async () => {
-        const {success, profile/* , errorMessage */} = await getProfileByUID(uid)
+        const { success, profile, errorMessage } = await getProfileByUID(uid)
         if (success && profile){
           setCurrentProfile(profile)
           setCurrentProfileState('success')
-        }else{
-          setCurrentProfileState('error')
+        } else {
+          setCurrentProfileState(errorMessage || 'error')
         }
       }
       fetchProfile()
@@ -37,7 +37,7 @@ export const Profile = () => {
   }, [])
 
   if (currentProfileState === 'loading') return <LoadingProfile />
-  if (currentProfileState === 'error') return <NotFound />
+  if (currentProfileState !== 'success') return currentProfileState !== 'error' ? <NotFound errorMessage={currentProfileState} /> : <NotFound />
   if (currentProfile)
     return (
       <WebContainer>

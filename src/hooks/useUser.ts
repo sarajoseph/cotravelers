@@ -5,6 +5,8 @@ import { authFirebase, db } from '../firebase/client'
 import { useUserStore } from '../store/userStore'
 import { doc, DocumentData, getDoc, setDoc } from 'firebase/firestore'
 import { FirebaseError } from 'firebase/app'
+import { useErrorHandle } from './useErrorHandle'
+import { CommonResponse } from '../global/types'
 
 type SaveUserDataProps = {
   photoURL?: string,
@@ -16,16 +18,17 @@ type UseUserProps = {
   user: DocumentData,
   firebaseIsLoading: boolean,
   saveUserData: ({photoURL, dataField, dataValue}: SaveUserDataProps) => Promise<{
-      saveUserDataSuccess: boolean
-      saveUserDataErrorMessage?: undefined
+      success: boolean
+      errorMessage?: undefined
     } | {
-      saveUserDataSuccess: boolean
-      saveUserDataErrorMessage: string
+      success: boolean
+      errorMessage: string
     }>
   saveErrorMessage: string | false
 }
 
 export const useUser = (): UseUserProps => {
+  const { handleFirebaseError, handleNotFoundError } = useErrorHandle()
   const [ firebaseIsLoading, setFirebaseIsLoading ] = useState<boolean>(true)
   const user: DocumentData = useUserStore((state) => ({
     avatar: state.avatar,
@@ -97,7 +100,7 @@ export const useUser = (): UseUserProps => {
 
   const [ saveErrorMessage, setSaveErrorMessage ] = useState<string | false>(false)
 
-  const saveUserData = async ( {photoURL, dataField, dataValue, userUpdated}: SaveUserDataProps ) => {
+  const saveUserData = async ( {photoURL, dataField, dataValue, userUpdated}: SaveUserDataProps ): Promise<CommonResponse> => {
     const userData = userUpdated || user
     if (authFirebase.currentUser && userData !== undefined) {
       try {
@@ -114,26 +117,18 @@ export const useUser = (): UseUserProps => {
         const data = await getUserData()
         setUserDataStore(data)
 
-        return { saveUserDataSuccess: true }
+        return { success: true }
 
       } catch (error) {
         const firebaseError = error as FirebaseError
-        console.error(firebaseError)
         setSaveErrorMessage(firebaseError.message)
-        return {
-          saveUserDataSuccess: false,
-          saveUserDataErrorMessage: firebaseError.message
-        }
+        return handleFirebaseError(error)
       }
 
     } else {
       const errorMessage = 'No user with login'
-      console.error(errorMessage)
       setSaveErrorMessage(errorMessage)
-      return {
-        saveUserDataSuccess: false,
-        saveUserDataErrorMessage: errorMessage
-      }
+      return handleNotFoundError(errorMessage)
     }
   }
 

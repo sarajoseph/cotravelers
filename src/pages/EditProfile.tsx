@@ -1,9 +1,9 @@
 import { Checkbox, CheckboxGroup, FormControl, FormLabel, Input, Textarea, Image, Card, CardBody, CardHeader, Heading, Tag, Flex, InputGroup, InputRightElement, FormErrorMessage, useToast, TagLabel, TagLeftIcon } from '@chakra-ui/react'
 import { Loading } from '../components/icons/Loading'
 import { useProfile } from '../hooks/useProfile'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { CheckIcon, WarningIcon } from '@chakra-ui/icons'
-import { useForm } from 'react-hook-form'
+import { FieldError, useForm } from 'react-hook-form'
 import { FormProfileInputs } from '../global/types'
 import { LoadingProfile } from '../components/icons/LoadingProfile'
 import { useHobbies } from '../hooks/useHobbies'
@@ -12,6 +12,7 @@ import { WebContainer } from './WebContainer'
 import { useUserStore } from '../store/userStore'
 import { useUser } from '../hooks/useUser'
 import { SelectFileBtn } from '../components/SelectFileBtn'
+import { NotFound } from './NotFound'
 
 export const EditProfile = () => {
   const toast = useToast()
@@ -37,6 +38,7 @@ export const EditProfile = () => {
   const { register, setValue, formState: { errors }, trigger } = useForm<FormProfileInputs>({
     mode: 'onChange' // Habilita las validaciones en tiempo real
   })
+  const [ editProfileState, setEditProfileState ] = useState<string>('loading')
   const [ nameState, setNameState ] = useState<string>()
   const [ surnameState, setSurnameState ] = useState<string>()
   const [ birthdayState, setBirthdayState ] = useState<string>()
@@ -48,18 +50,23 @@ export const EditProfile = () => {
   const [ countriesVisited, setCountriesVisited ] = useState<string[]>(user.countries || [])
 
   useEffect(() => {
-    // Set the value in react-hook-form
-    setValue('name', user.name || '')
-    setValue('surname', user.surname || '')
-    setValue('birthday', user.birthday || '')
-    setSelectedHobbies(user.hobbies)
-    setCountriesVisited(user.countries || [])
+    if (user) {
+      setEditProfileState('success')
+      // Set the value in react-hook-form
+      setValue('name', user.name || '')
+      setValue('surname', user.surname || '')
+      setValue('birthday', user.birthday || '')
+      setSelectedHobbies(user.hobbies)
+      setCountriesVisited(user.countries || [])
+    } else {
+      setEditProfileState('error')
+    }
   }, [])
 
-  const handleAvatarOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { handleUploadImageSuccess, handleUploadImageErrorMessage } = await handleUploadImage(e)
-    if (!handleUploadImageSuccess) {
-      setErrorUploadingAvatar(handleUploadImageErrorMessage ? handleUploadImageErrorMessage : 'Error uploading avatar')
+  const handleAvatarOnChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { success, errorMessage } = await handleUploadImage(e)
+    if (!success) {
+      setErrorUploadingAvatar(errorMessage ? errorMessage : 'Error uploading avatar')
     } else {
       setErrorUploadingAvatar(false)
       toast({
@@ -70,55 +77,16 @@ export const EditProfile = () => {
         isClosable: true,
       })
     }
-  }
+  }, [toast])
 
-  const handleNameOnChange = async (nameValue: string) => {
-    setNameState('loading')
-    setValue('name', nameValue)
-    const resultIsValid = await trigger('name')
+  const handleFieldChange = async (field: keyof FormProfileInputs, value: string) => {
+    const resultIsValid = await trigger(field)
     if (resultIsValid) {
-      const nameIsSaved = await saveUserData({dataField: 'name', dataValue: nameValue})
-      setNameState(nameIsSaved ? 'success' : 'error')
+      const { success } = await saveUserData({dataField: field, dataValue: value})
+      return success ? 'success' : 'error'
     } else {
-      setNameState('error')
+      return 'error'
     }
-  }
-
-  const handleSurnameOnChange = async (surnameValue: string) => {
-    setSurnameState('loading')
-    setValue('surname', surnameValue)
-    const resultIsValid = await trigger('surname')
-    if (resultIsValid) {
-      const surnameIsSaved = await saveUserData({dataField: 'surname', dataValue: surnameValue})
-      setSurnameState(surnameIsSaved ? 'success' : 'error')
-    } else {
-      setSurnameState('error')
-    }
-  }
-
-  const handleBirthdayOnChange = async (birthdayValue: string) => {
-    setBirthdayState('loading')
-    setValue('birthday', birthdayValue)
-    const resultIsValid = await trigger('birthday')
-    if (resultIsValid) {
-      const birthdayIsSaved = await saveUserData({dataField: 'birthday', dataValue: birthdayValue})
-      setBirthdayState(birthdayIsSaved ? 'success' : 'error')
-    } else {
-      setBirthdayState('error')
-    }
-  }
-
-  const handleBioOnChange = async (bioValue: string) => {
-    setBioState('loading')
-    const bioIsSaved = await saveUserData({dataField: 'bio', dataValue: bioValue})
-    setBioState(bioIsSaved ? 'success' : 'error')
-  }
-
-  const handleSelectedHobbies = async (selectedValues: string[]) => {
-    setHobbiesState('loading')
-    const hobbiesAreSaved = await saveUserData({dataField: 'hobbies', dataValue: selectedValues})
-    setHobbiesState(hobbiesAreSaved ? 'success' : 'error')
-    if (hobbiesAreSaved) setSelectedHobbies(selectedValues)
   }
 
   const handleClickCountry = async (countryName: string) => {
@@ -142,9 +110,9 @@ export const EditProfile = () => {
     const selectedCountries = newCountriesVisited(userUpdated.countries)
 
     try {
-      const countriesAreSaved = await saveUserData({dataField: 'countries', dataValue: selectedCountries, userUpdated})
+      const { success } = await saveUserData({dataField: 'countries', dataValue: selectedCountries, userUpdated})
 
-      if (countriesAreSaved) {
+      if (success) {
         setCountriesVisited(selectedCountries)
         setCountriesState('success')
       } else {
@@ -158,8 +126,15 @@ export const EditProfile = () => {
 
   }
 
-  if (user === null) return <LoadingProfile />
+  const renderStatusIcon = (status: string, errorValue?: FieldError) => {
+    if (status === 'loading') return <Loading size='sm' height='auto' />
+    if (status === 'error' || errorValue) return <WarningIcon color='red.500' />
+    if (status === 'success') return <CheckIcon color='green.500' />
+  }
 
+  if (editProfileState === 'loading') return <LoadingProfile />
+  if (editProfileState === 'error') return <NotFound />
+  if (editProfileState)
   return (
     <WebContainer>
       <Flex flexDirection='column' rowGap='5'>
@@ -222,12 +197,16 @@ export const EditProfile = () => {
                         message: 'Name must contain only letters'
                       }
                     })}
-                    onChange={(e) => handleNameOnChange(e.target.value)}
+                    onChange={async (e) => {
+                      setNameState('loading')
+                      const nameValue = e.target.value
+                      setValue('name', nameValue)
+                      const response = await handleFieldChange('name', nameValue)
+                      setNameState(response)
+                    }}
                   />
                   <InputRightElement>
-                    {nameState === 'loading' && <Loading size='sm' height='auto' />}
-                    {(nameState === 'error' || errors.name) && <WarningIcon color='red.500' />}
-                    {nameState === 'success' && <CheckIcon color='green.500' />}
+                    {nameState && renderStatusIcon(nameState, errors.name)}
                   </InputRightElement>
                 </InputGroup>
                 {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
@@ -245,12 +224,16 @@ export const EditProfile = () => {
                         message: 'Surname must contain only letters'
                       }
                     })}
-                    onChange={(e) => handleSurnameOnChange(e.target.value)}
+                    onChange={async (e) => {
+                      setSurnameState('loading')
+                      const surnameValue = e.target.value
+                      setValue('surname', surnameValue)
+                      const response = await handleFieldChange('surname', surnameValue)
+                      setSurnameState(response)
+                    }}
                   />
                   <InputRightElement>
-                    {surnameState === 'loading' && <Loading size='sm' height='auto' />}
-                    {(surnameState === 'error' || errors.surname) && <WarningIcon color='red.500' />}
-                    {surnameState === 'success' && <CheckIcon color='green.500' />}
+                    {surnameState && renderStatusIcon(surnameState, errors.surname)}
                   </InputRightElement>
                 </InputGroup>
                 {errors.surname && <FormErrorMessage>{errors.surname.message}</FormErrorMessage>}
@@ -266,12 +249,16 @@ export const EditProfile = () => {
                       valueAsDate: true,
                       validate: validateBirthday
                     })}
-                    onChange={(e) => handleBirthdayOnChange(e.target.value)}
+                    onChange={async (e) => {
+                      setBirthdayState('loading')
+                      const birthdayValue = e.target.value
+                      setValue('birthday', birthdayValue)
+                      const response = await handleFieldChange('birthday', birthdayValue)
+                      setBirthdayState(response)
+                    }}
                   />
                   <InputRightElement>
-                    {birthdayState === 'loading' && <Loading size='sm' height='auto' />}
-                    {(birthdayState === 'error' || errors.birthday) && <WarningIcon color='red.500' />}
-                    {birthdayState === 'success' && <CheckIcon color='green.500' />}
+                    {birthdayState && renderStatusIcon(birthdayState, errors.birthday)}
                   </InputRightElement>
                 </InputGroup>
                 {errors.birthday && <FormErrorMessage>{errors.birthday.message}</FormErrorMessage>}
@@ -280,32 +267,33 @@ export const EditProfile = () => {
             <FormControl mb='8'>
               <Flex alignItems='center'>
                 <FormLabel variant='profile'>Bio</FormLabel>
-                {
-                  <>
-                    {bioState === 'loading' && <Loading size='sm' height='auto' />}
-                    {(bioState === 'error') && <WarningIcon color='red.500' />}
-                    {bioState === 'success' && <CheckIcon color='green.500' />}
-                  </>
-                }
+                {bioState && renderStatusIcon(bioState)}
               </Flex>
               <Textarea
                 placeholder='Describe yourself here...'
                 defaultValue={user.bio}
-                onChange={(e) => handleBioOnChange(e.target.value)}
+                onChange={async (e) => {
+                  setBioState('loading')
+                  const bioValue = e.target.value
+                  const { success } = await saveUserData({dataField: 'bio', dataValue: bioValue})
+                  setBioState(success ? 'success' : 'error')
+                }}
               />
             </FormControl>
             <FormControl mb='8'>
               <Flex alignItems='center' mb='2'>
                 <FormLabel variant='profile'>Hobbies</FormLabel>
-                {
-                  <>
-                    {hobbiesState === 'loading' && <Loading size='sm' height='auto' />}
-                    {(hobbiesState === 'error') && <WarningIcon color='red.500' />}
-                    {hobbiesState === 'success' && <CheckIcon color='green.500' />}
-                  </>
-                }
+                {hobbiesState && renderStatusIcon(hobbiesState)}
               </Flex>
-              <CheckboxGroup value={selectedHobbies} onChange={handleSelectedHobbies} colorScheme='green'>
+              <CheckboxGroup
+                value={selectedHobbies}
+                colorScheme='green'
+                onChange={async (selectedValues: string[]) => {
+                  setHobbiesState('loading')
+                  const { success } = await saveUserData({dataField: 'hobbies', dataValue: selectedValues})
+                  setHobbiesState(success ? 'success' : 'error')
+                  if (success) setSelectedHobbies(selectedValues)
+                }}>
                 <Flex gap='4' direction='row' wrap='wrap'>
                   {hobbies &&
                     hobbies.map((hobbie: {id: string, name: string, icon: () => JSX.Element}) => {
@@ -332,13 +320,7 @@ export const EditProfile = () => {
             <FormControl mb='8'>
               <Flex alignItems='center' mb='2'>
                 <FormLabel variant='profile'>Countries visited</FormLabel>
-                {
-                  <>
-                    {countriesState === 'loading' && <Loading size='sm' height='auto' />}
-                    {(countriesState === 'error') && <WarningIcon color='red.500' />}
-                    {countriesState === 'success' && <CheckIcon color='green.500' />}
-                  </>
-                }
+                {countriesState && renderStatusIcon(countriesState)}
               </Flex>
               <WorldMap
                 countriesVisited={countriesVisited}

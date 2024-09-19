@@ -36,3 +36,8 @@ export type FormProfileInputs = {
   hobbies: string[]
   countries: string[]
 }
+
+export type CommonResponse = {
+  success: boolean
+  errorMessage?: string
+}
