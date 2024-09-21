@@ -2,7 +2,7 @@
 import { MapContainer, TileLayer, GeoJSON  } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { LatLngTuple, Layer  } from 'leaflet'
-import countriesGeoJson from '../../public/countries.geo.json'
+import countriesGeoJson from '../assets/countries.geo.json'
 import { Feature, GeoJsonProperties, Geometry } from 'geojson'
 import { useWorldMap } from '../hooks/useWorldMap'
 import { useCallback, useEffect, useMemo, useState } from 'react'

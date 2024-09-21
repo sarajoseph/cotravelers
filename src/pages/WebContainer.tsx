@@ -1,16 +1,18 @@
 import { ReactNode } from 'react'
 import { Footer } from '../components/Footer'
 import { Header } from '../components/header/Header'
-import { Container } from '@chakra-ui/react'
+import { Box, Container } from '@chakra-ui/react'
 
 export const WebContainer = ({ children }: {children: ReactNode}) => {
   return (
-    <Container maxW='container.lg'>
+    <Box bgColor='#efefef'>
       <Header />
-      <main>
-        {children}
-      </main>
+      <Container maxW='container.lg' my='10'>
+        <main className='min-h-screen'>
+          {children}
+        </main>
+      </Container>
       <Footer />
-    </Container>
+    </Box>
   )
 }

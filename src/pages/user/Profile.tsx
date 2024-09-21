@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, Box, Card, CardBody, CardHeader, Flex, Heading, Tag, TagLabel, TagLeftIcon, Text } from '@chakra-ui/react'
-import { WebContainer } from './WebContainer'
+import { WebContainer } from '../WebContainer'
 import { useParams } from 'react-router-dom'
-import { LoadingProfile } from '../components/icons/LoadingProfile'
-import { useHobbies } from '../hooks/useHobbies'
+import { LoadingProfile } from '../../components/icons/LoadingProfile'
+import { useHobbies } from '../../hooks/useHobbies'
 import { DocumentData } from 'firebase/firestore'
-import { Verified } from '../components/icons/Verified'
-import { WorldMap } from '../components/WorldMap'
-import { useProfile } from '../hooks/useProfile'
+import { Verified } from '../../components/icons/Verified'
+import { WorldMap } from '../../components/WorldMap'
+import { useProfile } from '../../hooks/useProfile'
 import { useEffect, useState } from 'react'
-import { NotFound } from './NotFound'
+import { NotFound } from '../common/NotFound'
 
 export const Profile = () => {
   const { uid } = useParams()

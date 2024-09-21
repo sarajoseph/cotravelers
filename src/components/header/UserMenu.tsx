@@ -7,6 +7,7 @@ import { ResetPassword } from '../modals/ResetPassword'
 import { Link } from 'react-router-dom'
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { useUserStore } from '../../store/userStore'
+import { urlProfile, urlHowitworks, urlContact, urlFaq, urlEditProfile, urlGuides, urlTrips, urlMyTrips, urlCreateTrip } from '../../store/constantsStore'
 
 export const UserMenu = () => {
   const loginModal = useDisclosure()
@@ -22,7 +23,6 @@ export const UserMenu = () => {
   const uid = user.uid
   const userIsLogin = user.userIsLogin
   const username = user.username
-  const userProfileLink = '/profile/'+uid
   return (
   <>
     <Menu closeOnSelect={false}>
@@ -64,25 +64,25 @@ export const UserMenu = () => {
               size='md'
             />
             <Flex direction='column' p='4'>
-              <Text>Hi <Link to={userProfileLink}><Text as='b'>@{username}</Text></Link>!</Text>
-              <Link to={'/edit-profile'}>Edit profile</Link>
+              <Text>Hi <Link to={urlProfile+uid}><Text as='b'>@{username}</Text></Link>!</Text>
+              <Link to={urlEditProfile}>Edit profile</Link>
             </Flex>
           </Flex>
         </MenuGroup>
         <MenuGroup pt='4'>
-          <MenuItem className='custom-menu-item'><Link to={userProfileLink}>My Account</Link></MenuItem>
-          <MenuItem className='custom-menu-item'>My trips</MenuItem>
-          <MenuItem className='custom-menu-item'>Create a trip</MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlProfile+uid}>My Account</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlMyTrips}>My trips</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlCreateTrip}>Create a trip</Link></MenuItem>
         </MenuGroup>
         <MenuDivider />
       </>
       }
         <MenuGroup title='Menu' mx='3'>
-          <MenuItem className='custom-menu-item'>Trips</MenuItem>
-          <MenuItem className='custom-menu-item'>Guides</MenuItem>
-          <MenuItem className='custom-menu-item'>How it works?</MenuItem>
-          <MenuItem className='custom-menu-item'>Contact</MenuItem>
-          <MenuItem className='custom-menu-item'>FAQ</MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlTrips}>Trips</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlGuides}>Guides</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlHowitworks}>How it works?</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlContact}>Contact</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlFaq}>FAQ</Link></MenuItem>
         </MenuGroup>
         <MenuDivider />
         { userIsLogin &&

@@ -1,4 +1,4 @@
-import { WebContainer } from './WebContainer'
+import { WebContainer } from '../WebContainer'
 
 export const Home = () => {
   return (

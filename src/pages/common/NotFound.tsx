@@ -1,5 +1,5 @@
 import { Flex, Heading, Text } from '@chakra-ui/react'
-import { WebContainer } from './WebContainer'
+import { WebContainer } from '../WebContainer'
 import { FaRegSadCry } from 'react-icons/fa';
 
 

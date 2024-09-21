@@ -1,18 +1,18 @@
 import { Checkbox, CheckboxGroup, FormControl, FormLabel, Input, Textarea, Image, Card, CardBody, CardHeader, Heading, Tag, Flex, InputGroup, InputRightElement, FormErrorMessage, useToast, TagLabel, TagLeftIcon } from '@chakra-ui/react'
-import { Loading } from '../components/icons/Loading'
-import { useProfile } from '../hooks/useProfile'
+import { Loading } from '../../components/icons/Loading'
+import { useProfile } from '../../hooks/useProfile'
 import { useCallback, useEffect, useState } from 'react'
 import { CheckIcon, WarningIcon } from '@chakra-ui/icons'
 import { FieldError, useForm } from 'react-hook-form'
-import { FormProfileInputs } from '../global/types'
-import { LoadingProfile } from '../components/icons/LoadingProfile'
-import { useHobbies } from '../hooks/useHobbies'
-import { WorldMap } from '../components/WorldMap'
-import { WebContainer } from './WebContainer'
-import { useUserStore } from '../store/userStore'
-import { useUser } from '../hooks/useUser'
-import { SelectFileBtn } from '../components/SelectFileBtn'
-import { NotFound } from './NotFound'
+import { FormProfileInputs } from '../../global/types'
+import { LoadingProfile } from '../../components/icons/LoadingProfile'
+import { useHobbies } from '../../hooks/useHobbies'
+import { WorldMap } from '../../components/WorldMap'
+import { WebContainer } from '../WebContainer'
+import { useUserStore } from '../../store/userStore'
+import { useUser } from '../../hooks/useUser'
+import { SelectFileBtn } from '../../components/SelectFileBtn'
+import { NotFound } from '../common/NotFound'
 
 export const EditProfile = () => {
   const toast = useToast()
@@ -155,7 +155,7 @@ export const EditProfile = () => {
             </Flex>
             <FormControl mb='8' isInvalid={!!errorUploadingAvatar}>
               <FormLabel variant='profile'>Profile image</FormLabel>
-              <Flex direction={{ base: 'column', md: 'row'}} alignItems={{ base: 'flex-start', md: 'center'}} columnGap='5'>
+              <Flex direction={{ base: 'column', md: 'row'}} alignItems={{ base: 'flex-start', md: 'center'}} gap='5'>
                 <Image
                   id='editprofileImage'
                   borderRadius='full'
