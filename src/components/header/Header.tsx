@@ -7,7 +7,7 @@ export const Header = () => {
   return (
     <header className='bg-white'>
       <Container maxW='container.lg'>
-        <Flex direction='row' justify='space-between' py='4'>
+        <Flex direction='row' justify='space-between' py='4' alignItems='center'>
           <Link to='/' dir='row'>
             <Flex direction='row' alignItems='center'>
               <Img

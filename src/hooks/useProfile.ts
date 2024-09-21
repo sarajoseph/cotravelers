@@ -8,9 +8,9 @@ import { useErrorHandle } from './useErrorHandle'
 import { CommonResponse } from '../global/types'
 
 type ProfileByUIDResponse = {
-  success: boolean;
-  profile?: {[x: string]: any};
-  errorMessage?: string;
+  success: boolean
+  profile?: {[x: string]: any}
+  errorMessage?: string
 }
 
 export const useProfile = () => {

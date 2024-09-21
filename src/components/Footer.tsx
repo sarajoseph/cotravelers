@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
 import { urlContact, urlFacebook, urlFaq, urlGuides, urlHowitworks, urlInstagram, urlLegal, urlPrivacy, urlTrips } from '../store/constantsStore'
-import { FaInstagram, FaFacebook } from 'react-icons/fa';
+import { FaInstagram, FaFacebook } from 'react-icons/fa'
 
 
 export const Footer = () => {

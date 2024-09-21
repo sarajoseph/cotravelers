@@ -1,6 +1,6 @@
-import { Flex } from "@chakra-ui/react";
-import { ReactNode } from "react"
-import { AiOutlineUpload } from "react-icons/ai";
+import { Flex } from '@chakra-ui/react'
+import { ReactNode } from 'react'
+import { AiOutlineUpload } from 'react-icons/ai'
 
 export const SelectFileBtn = ({ children }: {children: ReactNode}) => {
   return (

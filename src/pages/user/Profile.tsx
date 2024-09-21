@@ -42,65 +42,65 @@ export const Profile = () => {
     return (
       <WebContainer>
         <Flex flexDirection='column' rowGap='5'>
-        <Card>
-          <CardHeader>
-            <Heading variant='h2' as='h2' fontSize='xl'>@{currentProfile.username}'s profile</Heading>
-          </CardHeader>
-          <CardBody>
-            <Flex columnGap='5'>
-              <Avatar
-                name={currentProfile.username}
-                src={currentProfile.avatar}
-                size='2xl'
-              />
-              <Flex flexDirection='column' justifyContent='center'>
-                <Flex columnGap='1'>
-                  <Text fontSize='xl' as='b'>@{currentProfile.username}</Text>
-                  {currentProfile.verified && <Verified />}
+          <Card>
+            <CardHeader>
+              <Heading variant='h2' as='h2' fontSize='xl'>@{currentProfile.username}'s profile</Heading>
+            </CardHeader>
+            <CardBody>
+              <Flex columnGap='5'>
+                <Avatar
+                  name={currentProfile.username}
+                  src={currentProfile.avatar}
+                  size='2xl'
+                />
+                <Flex flexDirection='column' justifyContent='center'>
+                  <Flex columnGap='1'>
+                    <Text fontSize='xl' as='b'>@{currentProfile.username}</Text>
+                    {currentProfile.verified && <Verified />}
+                  </Flex>
+                  <p>{currentProfile.name +' '+ currentProfile.surname}</p>
+                  <p>{currentProfile.public_email}</p>
                 </Flex>
-                <p>{currentProfile.name +' '+ currentProfile.surname}</p>
-                <p>{currentProfile.public_email}</p>
               </Flex>
-            </Flex>
 
-            <Flex flexDirection='column' rowGap='5' mt='10'>
-              <Box>
-                <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                  Bio
-                </Heading>
-                <Text>
-                  {currentProfile.bio}
-                </Text>
-              </Box>
-              <Box>
-                <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                  Hobbies
-                </Heading>
-                <Flex gap={4} wrap='wrap'>
-                  {
-                    (hobbies && currentProfile.hobbies !== undefined) &&
-                      (currentProfile.hobbies).map((hobby: string) => {
-                        const matchingHobby = hobbies.find((h: DocumentData) => h.id === hobby )
-                        return matchingHobby && (
-                          <Tag key={hobby} size='lg' colorScheme='gray' padding='3' variant='subtle'>
-                            <TagLeftIcon as={matchingHobby.icon} />
-                            <TagLabel pl={2}>{matchingHobby.name}</TagLabel>
-                          </Tag>
-                        )
-                      }
-                    )
-                  }
-                </Flex>
-              </Box>
-              <Box>
-                <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                  Countries visited
-                </Heading>
-                <WorldMap countriesVisited={currentProfile.countries} />
-              </Box>
-            </Flex>
-          </CardBody>
-        </Card>
+              <Flex flexDirection='column' rowGap='5' mt='10'>
+                <Box>
+                  <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
+                    Bio
+                  </Heading>
+                  <Text>
+                    {currentProfile.bio}
+                  </Text>
+                </Box>
+                <Box>
+                  <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
+                    Hobbies
+                  </Heading>
+                  <Flex gap={4} wrap='wrap'>
+                    {
+                      (hobbies && currentProfile.hobbies !== undefined) &&
+                        (currentProfile.hobbies).map((hobby: string) => {
+                          const matchingHobby = hobbies.find((h: DocumentData) => h.id === hobby )
+                          return matchingHobby && (
+                            <Tag key={hobby} size='lg' colorScheme='gray' padding='3' variant='subtle'>
+                              <TagLeftIcon as={matchingHobby.icon} />
+                              <TagLabel pl={2}>{matchingHobby.name}</TagLabel>
+                            </Tag>
+                          )
+                        }
+                      )
+                    }
+                  </Flex>
+                </Box>
+                <Box>
+                  <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
+                    Countries visited
+                  </Heading>
+                  <WorldMap countriesVisited={currentProfile.countries} />
+                </Box>
+              </Flex>
+            </CardBody>
+          </Card>
         </Flex>
       </WebContainer>
     )
