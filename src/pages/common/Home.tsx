@@ -12,6 +12,7 @@ import { Loading } from '../../components/icons/Loading'
 import { Link } from 'react-router-dom'
 import { urlTrips } from '../../store/constantsStore'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
+import { HomeDescription } from '../../components/HomeDescription'
 
 export const Home = () => {
   const { getAllTrips } = useTrip()
@@ -48,6 +49,7 @@ export const Home = () => {
   if (allTrips) {
     return (
       <WebContainer>
+        <HomeDescription />
         {nextTripsState === 'loading' && <Loading /> }
         {nextTrips &&
         <Box mb='16'>
