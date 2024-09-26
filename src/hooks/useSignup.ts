@@ -40,7 +40,8 @@ export const useSignup = () => {
               bio: '',
               hobbies: [],
               countries: [],
-              uid: authFirebase.currentUser.uid
+              uid: authFirebase.currentUser.uid,
+              trips: []
             })
           }
           await signOut(authFirebase)

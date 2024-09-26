@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebContainer } from '../WebContainer'
-import { Avatar, Box, Card, CardBody, CardHeader, Flex, Heading, Text, Link as ChakraLink, AvatarGroup, Button, Image } from '@chakra-ui/react'
+import { Avatar, Box, Card, CardBody, CardHeader, Flex, Heading, Text, Link as ChakraLink, AvatarGroup, Button, Image, useToast, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react'
 import { useParams, Link as ReactRouterLink } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
 import { useEffect, useState } from 'react'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from '../common/NotFound'
 import { Verified } from '../../components/icons/Verified'
-import { MdPlace } from 'react-icons/md'
+import { MdErrorOutline, MdPlace } from 'react-icons/md'
 import { IoTime } from 'react-icons/io5'
 import { IoIosPeople, IoMdPricetag } from 'react-icons/io'
 import { useNavigate } from 'react-router-dom'
@@ -19,14 +19,16 @@ import { useUserStore } from '../../store/userStore'
 
 export const Trip = () => {
   const { tripID } = useParams()
-  const { getTrip } = useTrip()
+  const { getTrip, joinTrip, leaveTrip } = useTrip()
   const navigate = useNavigate()
+  const toast = useToast()
+  const user = useUserStore((state) => ({uid: state.uid}))
+  const userID = user.uid
+  const iconColor = '#52c3cf'
   const [ currentTrip, setCurrentTrip ] = useState<{ [x: string]: any } | null>(null)
   const [ currentTripState, setCurrentTripState ] = useState<string>('loading')
-  const user = useUserStore((state) => ({
-    uid: state.uid
-  }))
-  const iconColor = '#52c3cf'
+  const [ userJoinTrip, setUserJoinTrip ] = useState<boolean>(false)
+  const [ joinIsLoading, setJoinIsLoading ] = useState<boolean>(false)
 
   useEffect(() => {
     if (tripID) {
@@ -35,6 +37,8 @@ export const Trip = () => {
         if (success && trip){
           setCurrentTrip(trip)
           setCurrentTripState('success')
+          const travellerFound = trip.travelers.find((traveler: {username: string, avatar: string, uid: string}) => traveler.uid === userID)
+          setUserJoinTrip(travellerFound !== undefined)
         } else {
           setCurrentTripState(errorMessage || 'error')
         }
@@ -59,12 +63,44 @@ export const Trip = () => {
     return days
   }
 
-  const handleJoinTrip = () => {
-    console.log('handleJoinTrip')
-  }
-
   const handleEditTrip = () => {
     navigate(urlEditTrip+tripID)
+  }
+
+  const handleJoinTrip = async () => {
+    if (!tripID) return
+    setJoinIsLoading(true)
+    const { success, errorMessage } = await joinTrip(tripID)
+    if (success) {
+      setJoinIsLoading(false)
+      navigate(0)
+    } else {
+      toast({
+        title: 'Ooops!',
+        description: errorMessage,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
+  }
+
+  const handleLeaveTrip = async () => {
+    if (!tripID) return
+    setJoinIsLoading(true)
+    const { success, errorMessage } = await leaveTrip(tripID)
+    if (success) {
+      setJoinIsLoading(false)
+      navigate(0)
+    } else {
+      toast({
+        title: 'Ooops!',
+        description: errorMessage,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
   }
 
   if (currentTripState === 'loading') return <LoadingProfile />
@@ -109,10 +145,18 @@ export const Trip = () => {
                   </Flex>
                 </Flex>
                 <Flex columnGap='4'>
-                  {user.uid !== currentTrip.author_uid &&
-                  <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}}>Join trip</Button>}
-                  {user.uid === currentTrip.author_uid &&
+                  {userID !== currentTrip.author_uid && currentTrip.travelers.length < currentTrip.spots && !userJoinTrip &&
+                  <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} isLoading={joinIsLoading}>Join trip</Button>}
+                  {userID !== currentTrip.author_uid && userJoinTrip &&
+                  <Button onClick={handleLeaveTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} isLoading={joinIsLoading}>Leave trip</Button>}
+                  {userID === currentTrip.author_uid &&
                   <Button onClick={handleEditTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}}>Edit trip</Button>}
+                  {currentTrip.travelers.length >= currentTrip.spots &&
+                    <Tag size='lg' colorScheme='pink'>
+                      <TagLeftIcon fontSize='20' as={MdErrorOutline} />
+                      <TagLabel>No spots available</TagLabel>
+                    </Tag>
+                  }
                 </Flex>
               </Flex>
               <Flex
