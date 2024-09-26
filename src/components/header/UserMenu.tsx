@@ -43,7 +43,7 @@ export const UserMenu = () => {
         />
       </MenuButton>
     }
-      <MenuList pt='0'>
+      <MenuList pt='0' zIndex='5'>
       { !userIsLogin &&
       <>
         <MenuGroup>

@@ -248,7 +248,7 @@ export const Trip = () => {
           isOpen={modalCancelTrip.isOpen}
           cancelRef={cancelRef}
           onClose={modalCancelTrip.onClose}
-         />
+        />
       </WebContainer>
     )
 }
