@@ -2,9 +2,8 @@
 import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputRightElement, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Textarea, useToast } from '@chakra-ui/react'
 import countriesJson from '../../assets/countries.geo.json'
 import { useState } from 'react'
-import { currentCoin } from '../../store/constantsStore'
+import { currentCoin, urlTrip } from '../../store/constantsStore'
 import { useNavigate } from 'react-router-dom'
-import { urlTrip } from '../../store/constantsStore'
 import { useTrip } from '../../hooks/useTrip'
 
 export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {

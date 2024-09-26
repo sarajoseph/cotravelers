@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { addDoc, arrayRemove, arrayUnion, collection, doc, DocumentData, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
-import { authFirebase, db } from '../firebase/client'
+import { db } from '../firebase/client'
 import { useErrorHandle } from './useErrorHandle'
 import { useProfile } from './useProfile'
 import { CommonResponse } from '../global/types'
@@ -22,29 +22,28 @@ type EditTripDataProps = TripDataProps & {
   travelers: string
 }
 
-type CreateTripResponse = {
-  success: boolean
+type CreateTripResponse = CommonResponse & {
   tripID?: string
-  errorMessage?: string
 }
 
-type GetTripResponse = {
-  success: boolean
+type GetTripResponse = CommonResponse & {
   trip?: {[x: string]: any}
-  errorMessage?: string
 }
 
-type GetAllTripsResponse = {
-  success: boolean
+type GetAllTripsResponse = CommonResponse & {
   trips?: {[x: string]: any}
-  errorMessage?: string
+}
+
+type GetTripsByUserIDResponse = CommonResponse & {
+  userTrips?: {[x: string]: any}
 }
 
 type UseTripProps = {
   createTrip: (tripData: TripDataProps) => Promise<CreateTripResponse>
   editTrip: (tripData: EditTripDataProps) => Promise<CommonResponse>
-  getTrip: (tripID: string) => Promise<GetTripResponse>
   getAllTrips: () => Promise<GetAllTripsResponse>
+  getTrip: (tripID: string) => Promise<GetTripResponse>
+  getTripsByUserID: (user_id: string) => Promise<GetTripsByUserIDResponse>
   joinTrip: (tripID: string) => Promise<CommonResponse>
   leaveTrip: (tripID: string) => Promise<CommonResponse>
 }
@@ -52,9 +51,8 @@ type UseTripProps = {
 export const useTrip = (): UseTripProps => {
   const { handleFirebaseError, handleNotFoundError } = useErrorHandle()
   const { getProfileByUID } = useProfile()
-  const user: DocumentData = useUserStore((state) => ({
-    uid: state.uid,
-  }))
+  const user: DocumentData = useUserStore((state) => ({ uid: state.uid }))
+  const userID = user.uid
 
   const createTrip = async (tripData: TripDataProps): Promise<CreateTripResponse> => {
     try {
@@ -66,14 +64,18 @@ export const useTrip = (): UseTripProps => {
         budget: tripData.budgetValue,
         title: tripData.title,
         description: tripData.description,
-        user_host_id: authFirebase.currentUser?.uid,
-        travelers: [authFirebase.currentUser?.uid]
+        user_host_id: userID,
+        travelers: [userID]
       }
       const docRef = await addDoc(collection(db, 'trips'), data)
+      const tripID = docRef.id
+      await updateDoc(doc(db, 'users', userID), {
+        trips: arrayUnion(tripID)
+      })
 
       return {
         success: true,
-        tripID: docRef.id
+        tripID
       }
 
     } catch (error) {
@@ -102,6 +104,40 @@ export const useTrip = (): UseTripProps => {
     } catch (error) {
       return handleFirebaseError(error)
     }
+  }
+
+  const getAllTrips = async (): Promise<GetAllTripsResponse> => {
+    try {
+      const tripsCollection = await getDocs(collection(db, 'trips'))
+      const trips = await Promise.all(tripsCollection.docs.map(async (doc) => {
+        const countryImage = await getCountryImage(doc.data().country)
+        return ({
+          id: doc.id,
+          image: countryImage,
+          ...doc.data()
+        })
+      }))
+
+      if (trips) {
+        return {
+          success: true,
+          trips
+        }
+
+      } else {
+        return handleNotFoundError('Trips not found')
+      }
+
+    } catch (error) {
+      return handleFirebaseError(error)
+    }
+  }
+
+  const getCountryImage = async (country: string) => {
+    const apiKey = 'ZuVcL956xfdWNMZ2v732y70ZSq3FPc_Jm9jo_6yUd3Y'
+    const response = await fetch('https://api.unsplash.com/search/photos?query='+country+'&client_id='+apiKey)
+    const data = await response.json()
+    return data.results.length > 0 ? data.results[0].urls.regular : null
   }
 
   const getTrip = async (tripID: string): Promise<GetTripResponse> => {
@@ -151,38 +187,31 @@ export const useTrip = (): UseTripProps => {
     }
   }
 
-  const getAllTrips = async (): Promise<GetAllTripsResponse> => {
+  const getTripsByUserID = async(user_id: string): Promise<GetTripsByUserIDResponse> => {
     try {
-      const tripsCollection = await getDocs(collection(db, 'trips'))
-      const trips = await Promise.all(tripsCollection.docs.map(async (doc) => {
-        const countryImage = await getCountryImage(doc.data().country)
-        return ({
-          id: doc.id,
-          image: countryImage,
-          ...doc.data()
-        })
-      }))
+      const { success, profile, errorMessage } = await getProfileByUID(user_id)
+      if (success && profile) {
+        const userTrips = await Promise.all(
+          profile.trips.map(async (tripID: string) => {
+            const { success, trip } = await getTrip(tripID)
+            if (success && trip) {
+              trip.id = tripID
+              return trip
+            }
+          })
+        )
 
-      if (trips) {
         return {
           success: true,
-          trips
+          userTrips
         }
 
       } else {
-        return handleNotFoundError('Trips not found')
+        return handleNotFoundError(errorMessage || 'Not trips found for this user')
       }
-
     } catch (error) {
       return handleFirebaseError(error)
     }
-  }
-
-  const getCountryImage = async (country: string) => {
-    const apiKey = 'ZuVcL956xfdWNMZ2v732y70ZSq3FPc_Jm9jo_6yUd3Y'
-    const response = await fetch('https://api.unsplash.com/search/photos?query='+country+'&client_id='+apiKey)
-    const data = await response.json()
-    return data.results.length > 0 ? data.results[0].urls.regular : null
   }
 
   const joinTrip = async (tripID: string): Promise<CommonResponse> => {
@@ -196,9 +225,9 @@ export const useTrip = (): UseTripProps => {
         }
       }
       await updateDoc(doc(db, 'trips', tripID), {
-        travelers: arrayUnion(user.uid)
+        travelers: arrayUnion(userID)
       })
-      await updateDoc(doc(db, 'users', user.uid), {
+      await updateDoc(doc(db, 'users', userID), {
         trips: arrayUnion(tripID)
       })
       return {
@@ -214,9 +243,9 @@ export const useTrip = (): UseTripProps => {
     // Se ha de añadir tripID al campo trips de la tabla users y userID al campo travelers de la tabla trips
     try {
       await updateDoc(doc(db, 'trips', tripID), {
-        travelers: arrayRemove(user.uid)
+        travelers: arrayRemove(userID)
       })
-      await updateDoc(doc(db, 'users', user.uid), {
+      await updateDoc(doc(db, 'users', userID), {
         trips: arrayRemove(tripID)
       })
       return {
@@ -231,8 +260,9 @@ export const useTrip = (): UseTripProps => {
   return {
     createTrip,
     editTrip,
-    getTrip,
     getAllTrips,
+    getTrip,
+    getTripsByUserID,
     joinTrip,
     leaveTrip
   }
