@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WebContainer } from '../WebContainer'
-import { Avatar, Box, Card, CardBody, CardHeader, Flex, Heading, Text, Link as ChakraLink, AvatarGroup, Button, Image, useToast, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react'
+import { Avatar, Box, Card, CardBody, CardHeader, Flex, Heading, Text, Link as ChakraLink, AvatarGroup, Button, Image, useToast, Tag, TagLabel, TagLeftIcon, useDisclosure } from '@chakra-ui/react'
 import { useParams, Link as ReactRouterLink } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from '../common/NotFound'
 import { Verified } from '../../components/icons/Verified'
@@ -16,6 +16,7 @@ import { FaLongArrowAltRight } from 'react-icons/fa'
 import { urlProfile, urlEditTrip } from '../../store/constantsStore'
 import { formatDate } from '../../global/logic'
 import { useUserStore } from '../../store/userStore'
+import { CancelTripModal } from '../../components/modals/CancelTripModal'
 
 export const Trip = () => {
   const { tripID } = useParams()
@@ -72,7 +73,6 @@ export const Trip = () => {
     setJoinIsLoading(true)
     const { success, errorMessage } = await joinTrip(tripID)
     if (success) {
-      setJoinIsLoading(false)
       navigate(0)
     } else {
       toast({
@@ -83,6 +83,7 @@ export const Trip = () => {
         isClosable: true,
       })
     }
+    setJoinIsLoading(false)
   }
 
   const handleLeaveTrip = async () => {
@@ -90,7 +91,6 @@ export const Trip = () => {
     setJoinIsLoading(true)
     const { success, errorMessage } = await leaveTrip(tripID)
     if (success) {
-      setJoinIsLoading(false)
       navigate(0)
     } else {
       toast({
@@ -101,11 +101,15 @@ export const Trip = () => {
         isClosable: true,
       })
     }
+    setJoinIsLoading(false)
   }
+
+  const modalCancelTrip = useDisclosure()
+  const cancelRef = useRef()
 
   if (currentTripState === 'loading') return <LoadingProfile />
   if (currentTripState !== 'success') return currentTripState !== 'error' ? <NotFound errorMessage={currentTripState} /> : <NotFound />
-  if (currentTrip)
+  if (currentTrip && tripID)
     return (
       <WebContainer>
         <Flex flexDirection='column' rowGap='5'>
@@ -144,19 +148,30 @@ export const Trip = () => {
                     </Flex>
                   </Flex>
                 </Flex>
-                <Flex columnGap='4'>
-                  {userID !== currentTrip.author_uid && currentTrip.travelers.length < currentTrip.spots && !userJoinTrip &&
-                  <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} isLoading={joinIsLoading}>Join trip</Button>}
-                  {userID !== currentTrip.author_uid && userJoinTrip &&
-                  <Button onClick={handleLeaveTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} isLoading={joinIsLoading}>Leave trip</Button>}
-                  {userID === currentTrip.author_uid &&
-                  <Button onClick={handleEditTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}}>Edit trip</Button>}
-                  {currentTrip.travelers.length >= currentTrip.spots &&
-                    <Tag size='lg' colorScheme='pink'>
-                      <TagLeftIcon fontSize='20' as={MdErrorOutline} />
-                      <TagLabel>No spots available</TagLabel>
-                    </Tag>
+                <Flex columnGap='4' rowGap='2' direction={{base: 'column', md: 'row'}}>
+                  {currentTrip.travelers.length >= currentTrip.spots && !currentTrip.cancelled &&
+                  <Tag size='lg' colorScheme='pink'>
+                    <TagLeftIcon fontSize='20' as={MdErrorOutline} />
+                    <TagLabel>No spots available</TagLabel>
+                  </Tag>
                   }
+                  {currentTrip.cancelled &&
+                  <Tag size='lg' colorScheme='gray'>
+                    <TagLeftIcon fontSize='20' as={MdErrorOutline} />
+                    <TagLabel>Trip cancelled</TagLabel>
+                  </Tag>
+                  }
+                  {userID !== currentTrip.author_uid && !currentTrip.cancelled && currentTrip.travelers.length < currentTrip.spots && !userJoinTrip &&
+                  <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>Join trip</Button>
+                  }
+                  {userID !== currentTrip.author_uid && !currentTrip.cancelled && userJoinTrip &&
+                  <Button onClick={handleLeaveTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>Leave trip</Button>
+                  }
+                  {userID === currentTrip.author_uid && !currentTrip.cancelled &&
+                  <>
+                  <Button onClick={handleEditTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>Edit trip</Button>
+                  <Button onClick={modalCancelTrip.onOpen} colorScheme='red' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>Cancel trip</Button>
+                  </>}
                 </Flex>
               </Flex>
               <Flex
@@ -228,6 +243,12 @@ export const Trip = () => {
             </CardBody>
           </Card>
         </Flex>
+        <CancelTripModal
+          tripID={tripID}
+          isOpen={modalCancelTrip.isOpen}
+          cancelRef={cancelRef}
+          onClose={modalCancelTrip.onClose}
+         />
       </WebContainer>
     )
 }

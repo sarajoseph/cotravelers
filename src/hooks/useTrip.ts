@@ -39,6 +39,7 @@ type GetTripsByUserIDResponse = CommonResponse & {
 }
 
 type UseTripProps = {
+  cancelTrip: (tripID: string) => Promise<CommonResponse>
   createTrip: (tripData: TripDataProps) => Promise<CreateTripResponse>
   editTrip: (tripData: EditTripDataProps) => Promise<CommonResponse>
   getAllTrips: () => Promise<GetAllTripsResponse>
@@ -54,6 +55,21 @@ export const useTrip = (): UseTripProps => {
   const user: DocumentData = useUserStore((state) => ({ uid: state.uid }))
   const userID = user.uid
 
+  const cancelTrip = async (tripID: string) => {
+    try {
+      await updateDoc(doc(db, 'trips', tripID), {
+        cancelled: true
+      })
+
+      return {
+        success: true
+      }
+
+    } catch (error) {
+      return handleFirebaseError(error)
+    }
+  }
+
   const createTrip = async (tripData: TripDataProps): Promise<CreateTripResponse> => {
     try {
       const data = {
@@ -65,7 +81,8 @@ export const useTrip = (): UseTripProps => {
         title: tripData.title,
         description: tripData.description,
         user_host_id: userID,
-        travelers: [userID]
+        travelers: [userID],
+        cancel: false
       }
       const docRef = await addDoc(collection(db, 'trips'), data)
       const tripID = docRef.id
@@ -258,6 +275,7 @@ export const useTrip = (): UseTripProps => {
   }
 
   return {
+    cancelTrip,
     createTrip,
     editTrip,
     getAllTrips,

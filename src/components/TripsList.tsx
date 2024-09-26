@@ -9,6 +9,7 @@ import { formatDate } from '../global/logic'
 import { urlTrip } from '../store/constantsStore'
 
 export const TripsList = ({trip}: {trip: any}) => {
+  if (!trip.cancelled)
   return (
     <Card key={trip.id} direction='column' w='100%' justifyContent='space-between' maxW={{base: '100%', lg: '30%'}}>
       <CardHeader>
