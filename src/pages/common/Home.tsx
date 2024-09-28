@@ -14,6 +14,7 @@ import { urlTrips } from '../../store/constantsStore'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { HomeDescription } from '../../components/HomeDescription'
 import { sortByDateCreated, sortByDateFrom } from '../../global/logic'
+import { TripFinder } from '../../components/TripFinder'
 
 export const Home = () => {
   const { getAllTrips } = useTrip()
@@ -54,6 +55,7 @@ export const Home = () => {
   if (allTrips) {
     return (
       <WebContainer>
+        <TripFinder />
         <HomeDescription />
         {nextTripsState === 'loading' && <Loading /> }
         {nextTrips && nextTrips.length > 0 &&

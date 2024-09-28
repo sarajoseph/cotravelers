@@ -60,3 +60,5 @@ export const sortByDateCreated = (dateA: any, dateB: any, ascending: boolean = f
   const bTimestamp = dateB.seconds * 1000 + dateB.nanoseconds / 1000000
   return ascending ? aTimestamp - bTimestamp : bTimestamp - aTimestamp
 }
+
+export const removeAccents = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')

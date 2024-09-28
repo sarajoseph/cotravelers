@@ -5,6 +5,7 @@ import { useErrorHandle } from './useErrorHandle'
 import { useProfile } from './useProfile'
 import { CommonResponse } from '../global/types'
 import { useUserStore } from '../store/userStore'
+import { removeAccents } from '../global/logic'
 
 type TripDataProps = {
   selectedCountry: string
@@ -45,6 +46,7 @@ type UseTripProps = {
   editTrip: (tripData: EditTripDataProps) => Promise<CommonResponse>
   getAllTrips: () => Promise<GetAllTripsResponse>
   getTrip: (tripID: string) => Promise<GetTripResponse>
+  getTripsByDateAndLocation: (toDate: string, location: string) => Promise<GetAllTripsResponse>
   getTripsByUserID: (user_id: string) => Promise<GetTripsByUserIDResponse>
   joinTrip: (tripID: string) => Promise<CommonResponse>
   leaveTrip: (tripID: string) => Promise<CommonResponse>
@@ -229,6 +231,42 @@ export const useTrip = (): UseTripProps => {
     }
   }
 
+  const getTripsByDateAndLocation = async (toDate: string, location: string): Promise<GetAllTripsResponse> => {
+    try {
+      const {success, trips, errorMessage } = await getAllTrips()
+      if (success && trips) {
+        const month = toDate.length > 0 && (new Date(toDate).getMonth()+1).toString().padStart(2, '0')
+        const year = toDate.length > 0 && new Date(toDate).getFullYear()
+        const fromDate = toDate.length > 0 && year+'-'+month+'-01'
+
+        const filteredTrips = trips.filter((trip: any) => {
+          const matchesLocation = location.length > 0
+            ? removeAccents(trip.title.toLowerCase()).includes(removeAccents(location.toLowerCase()))
+            : false
+
+          const matchesDate = toDate.length > 0
+            ? ((trip.date_from >= fromDate) && (trip.date_from <= toDate))
+            : false
+
+          if (location.length > 0 && toDate.length > 0) return matchesLocation && matchesDate
+          if (location.length > 0 || toDate.length > 0) return matchesLocation || matchesDate
+          return true
+        })
+
+        return {
+          success: true,
+          trips: filteredTrips
+        }
+
+      }else {
+        return handleNotFoundError(errorMessage || 'Error')
+      }
+
+    } catch (error) {
+      return handleFirebaseError(error)
+    }
+  }
+
   const getTripsByUserID = async(user_id: string): Promise<GetTripsByUserIDResponse> => {
     try {
       const { success, profile, errorMessage } = await getProfileByUID(user_id)
@@ -306,6 +344,7 @@ export const useTrip = (): UseTripProps => {
     editTrip,
     getAllTrips,
     getTrip,
+    getTripsByDateAndLocation,
     getTripsByUserID,
     joinTrip,
     leaveTrip
