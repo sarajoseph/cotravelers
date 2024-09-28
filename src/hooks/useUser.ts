@@ -3,7 +3,7 @@ import { onAuthStateChanged, updateProfile, User } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 import { authFirebase, db } from '../firebase/client'
 import { useUserStore } from '../store/userStore'
-import { doc, DocumentData, getDoc, setDoc } from 'firebase/firestore'
+import { arrayRemove, collection, deleteDoc, doc, DocumentData, getDoc, getDocs, query, setDoc, updateDoc } from 'firebase/firestore'
 import { FirebaseError } from 'firebase/app'
 import { useErrorHandle } from './useErrorHandle'
 import { CommonResponse } from '../global/types'
@@ -17,13 +17,8 @@ type SaveUserDataProps = {
 type UseUserProps = {
   user: DocumentData,
   firebaseIsLoading: boolean,
-  saveUserData: ({photoURL, dataField, dataValue}: SaveUserDataProps) => Promise<{
-      success: boolean
-      errorMessage?: undefined
-    } | {
-      success: boolean
-      errorMessage: string
-    }>
+  deleteUser: (userID: string) => Promise<CommonResponse>
+  saveUserData: ({photoURL, dataField, dataValue}: SaveUserDataProps) => Promise<CommonResponse>
   saveErrorMessage: string | false
 }
 
@@ -132,9 +127,33 @@ export const useUser = (): UseUserProps => {
     }
   }
 
+  const deleteUser = async (userID: string): Promise<CommonResponse> => {
+    try {
+      await deleteDoc(doc(db, 'users', userID))
+      const querySnapshot = await getDocs(query(collection(db, 'trips')))
+      querySnapshot.forEach(async (userDoc) => {
+        const tripTravelers = userDoc.data().travelers
+
+        if (tripTravelers.includes(userID)) {
+          const userDocRef = userDoc.ref
+          await updateDoc(userDocRef, {
+            trips: arrayRemove(userID)
+          })
+          console.log('User removed from trip '+userDoc.id)
+        }
+      })
+      return {
+        success: true
+      }
+    } catch (error) {
+      return handleFirebaseError(error)
+    }
+  }
+
   return {
     user,
     firebaseIsLoading,
+    deleteUser,
     saveUserData,
     saveErrorMessage
   }

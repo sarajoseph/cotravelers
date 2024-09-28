@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { addDoc, arrayRemove, arrayUnion, collection, doc, DocumentData, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore'
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, DocumentData, getDoc, getDocs, query, setDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase/client'
 import { useErrorHandle } from './useErrorHandle'
 import { useProfile } from './useProfile'
@@ -41,6 +41,7 @@ type GetTripsByUserIDResponse = CommonResponse & {
 type UseTripProps = {
   cancelTrip: (tripID: string) => Promise<CommonResponse>
   createTrip: (tripData: TripDataProps) => Promise<CreateTripResponse>
+  deleteTrip: (tripID: string) => Promise<CommonResponse>
   editTrip: (tripData: EditTripDataProps) => Promise<CommonResponse>
   getAllTrips: () => Promise<GetAllTripsResponse>
   getTrip: (tripID: string) => Promise<GetTripResponse>
@@ -96,6 +97,29 @@ export const useTrip = (): UseTripProps => {
         tripID
       }
 
+    } catch (error) {
+      return handleFirebaseError(error)
+    }
+  }
+
+  const deleteTrip = async (tripID: string): Promise<CommonResponse> => {
+    try {
+      await deleteDoc(doc(db, 'trips', tripID))
+      const querySnapshot = await getDocs(query(collection(db, 'users')))
+      querySnapshot.forEach(async (userDoc) => {
+        const userTrips = userDoc.data().trips
+
+        if (userTrips.includes(tripID)) {
+          const userDocRef = userDoc.ref
+          await updateDoc(userDocRef, {
+            trips: arrayRemove(tripID)
+          })
+          console.log('Trip removed from user '+userDoc.id)
+        }
+      })
+      return {
+        success: true
+      }
     } catch (error) {
       return handleFirebaseError(error)
     }
@@ -278,6 +302,7 @@ export const useTrip = (): UseTripProps => {
   return {
     cancelTrip,
     createTrip,
+    deleteTrip,
     editTrip,
     getAllTrips,
     getTrip,
