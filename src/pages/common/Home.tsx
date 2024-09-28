@@ -6,13 +6,14 @@ import { useTrip } from '../../hooks/useTrip'
 import { useEffect, useState } from 'react'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from './NotFound'
-import { TripSlide } from '../../components/TripSlide'
+import { TripCard } from '../../components/TripCard'
 import { Box, Button, Flex, Heading } from '@chakra-ui/react'
 import { Loading } from '../../components/icons/Loading'
 import { Link } from 'react-router-dom'
 import { urlTrips } from '../../store/constantsStore'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { HomeDescription } from '../../components/HomeDescription'
+import { sortByDateCreated, sortByDateFrom } from '../../global/logic'
 
 export const Home = () => {
   const { getAllTrips } = useTrip()
@@ -27,14 +28,18 @@ export const Home = () => {
     const fetchTrips = async () => {
       const { success, trips, errorMessage} = await getAllTrips()
       if (success && Array.isArray(trips)){
-        setAllTrips(trips)
+        // currentTrips => Get trips with "date_from" from today or future and not cancelled
+        const currentTrips = trips.filter((trip: any) => new Date(trip.date_from) >= new Date() && !trip.cancelled)
+        setAllTrips(currentTrips)
         setAllTripsState('success')
-        const nextTrips = [...trips]
-        nextTrips.sort((a: any, b: any) => new Date(a.date_from).getTime() - new Date(b.date_from).getTime())
+        // nextTrips => Trips sorted by "date_from" departure date from nearest to farthest
+        const nextTrips = [...currentTrips]
+        nextTrips.sort((a: any, b: any) => sortByDateFrom(a.date_from, b.date_from))
         setNextTrips(nextTrips.slice(0, 9))
         setNextTripsState('success')
-        const lastTrips = [...trips]
-        lastTrips.sort((a: any, b: any) => a.date_from - b.date_from)
+        // lastTrips => Trips sorted by "date_created" from the most recently created trips to the oldest ones
+        const lastTrips = [...currentTrips]
+        lastTrips.sort((a: any, b: any) => sortByDateCreated(a.date_created, b.date_created))
         setLastTrips(lastTrips.slice(0, 9))
         setLastTripsState('success')
       } else {
@@ -51,14 +56,14 @@ export const Home = () => {
       <WebContainer>
         <HomeDescription />
         {nextTripsState === 'loading' && <Loading /> }
-        {nextTrips &&
+        {nextTrips && nextTrips.length > 0 &&
         <Box mb='16'>
           <Heading fontSize='3xl' mb='4'>Next trips</Heading>
           <SwiperCarousel>
             {nextTrips.map((trip: any) => {
               return (
               <SwiperSlide key={trip.id}>
-                <TripSlide trip={trip} />
+                <TripCard trip={trip} isSlide={true} />
               </SwiperSlide>
               )
             })}
@@ -69,14 +74,14 @@ export const Home = () => {
         </Box>
         }
         {lastTripsState === 'loading' && <Loading /> }
-        {lastTrips &&
+        {lastTrips && lastTrips.length > 0 &&
         <Box mb='16'>
           <Heading fontSize='3xl' mb='4'>Latest published trips</Heading>
           <SwiperCarousel>
             {lastTrips.map((trip: any) => {
               return (
               <SwiperSlide key={trip.id}>
-                <TripSlide trip={trip} />
+                <TripCard trip={trip} isSlide={true} />
               </SwiperSlide>
               )
             })}

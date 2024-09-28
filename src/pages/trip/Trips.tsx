@@ -2,10 +2,13 @@
 import { useEffect, useState } from 'react'
 import { useTrip } from '../../hooks/useTrip'
 import { WebContainer } from '../WebContainer'
-import { Flex, Heading } from '@chakra-ui/react'
+import { Box, Flex, Heading } from '@chakra-ui/react'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from '../common/NotFound'
-import { TripsList } from '../../components/TripsList'
+import { TripCard } from '../../components/TripCard'
+import { SwiperSlide } from 'swiper/react'
+import { SwiperCarousel } from '../../components/SwiperCarousel'
+import { sortByDateCreated, sortByDateFrom } from '../../global/logic'
 
 export const Trips = () => {
   const { getAllTrips } = useTrip()
@@ -28,16 +31,32 @@ export const Trips = () => {
   if (tripsState === 'loading') return <LoadingProfile />
   if (tripsState !== 'success') return tripsState !== 'error' ? <NotFound errorMessage={tripsState} /> : <NotFound />
   if (trips) {
+    const currentTrips = trips.filter((trip: any) => new Date(trip.date_from) >= new Date() && !trip.cancelled).sort((a: any, b: any) => sortByDateCreated(a.date_created, b.date_created))
+    const pastTrips = trips.filter((trip: any) => new Date(trip.date_from) < new Date() && !trip.cancelled).sort((a: any, b: any) => sortByDateFrom(a.date_from, b.date_from))
     return (
       <WebContainer>
-        <Heading mb='8'>Trips</Heading>
-        <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
-        {trips.map((trip: any) => {
-          return (
-          <TripsList key={trip.id} trip={trip} />
-          )
-        })}
-        </Flex>
+        <Box>
+          <Heading mb='8'>Trips</Heading>
+          <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
+          {currentTrips.map((trip: any) => {
+            return (
+            <TripCard key={trip.id} trip={trip} />
+            )
+          })}
+          </Flex>
+        </Box>
+        <Box mt='12'>
+          <Heading fontSize='2xl' mb='4'>Past trips</Heading>
+          <SwiperCarousel>
+            {pastTrips.map((trip: any) => {
+              return (
+              <SwiperSlide key={trip.id}>
+                <TripCard trip={trip} isSlide={true} />
+              </SwiperSlide>
+              )
+            })}
+          </SwiperCarousel>
+        </Box>
       </WebContainer>
     )
   }

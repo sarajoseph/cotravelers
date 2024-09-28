@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UseFormReset } from 'react-hook-form'
 import { FormRegisterInputs } from './types'
 
@@ -48,4 +49,14 @@ export const formatDate = (dateString: string) => {
   const month = months[date.getMonth()]
   const year = date.getFullYear()
   return day + ' ' + month + ' ' + year
+}
+
+export const sortByDateFrom = (dateA: any, dateB: any, ascending: boolean = true) => {
+  return ascending ? new Date(dateA).getTime() - new Date(dateB).getTime() : new Date(dateA).getTime() - new Date(dateB).getTime()
+}
+
+export const sortByDateCreated = (dateA: any, dateB: any, ascending: boolean = false) => {
+  const aTimestamp = dateA.seconds * 1000 + dateA.nanoseconds / 1000000
+  const bTimestamp = dateB.seconds * 1000 + dateB.nanoseconds / 1000000
+  return ascending ? aTimestamp - bTimestamp : bTimestamp - aTimestamp
 }

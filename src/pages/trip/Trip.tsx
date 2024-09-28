@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from '../common/NotFound'
 import { Verified } from '../../components/icons/Verified'
-import { MdErrorOutline, MdPlace } from 'react-icons/md'
+import { MdBolt, MdErrorOutline, MdPlace } from 'react-icons/md'
 import { IoTime } from 'react-icons/io5'
 import { IoIosPeople, IoMdPricetag } from 'react-icons/io'
 import { useNavigate } from 'react-router-dom'
@@ -17,6 +17,8 @@ import { urlProfile, urlEditTrip } from '../../store/constantsStore'
 import { formatDate } from '../../global/logic'
 import { useUserStore } from '../../store/userStore'
 import { CancelTripModal } from '../../components/modals/CancelTripModal'
+import { PiAirplaneLanding } from 'react-icons/pi'
+import { CgUnavailable } from 'react-icons/cg'
 
 export const Trip = () => {
   const { tripID } = useParams()
@@ -30,6 +32,11 @@ export const Trip = () => {
   const [ currentTripState, setCurrentTripState ] = useState<string>('loading')
   const [ userJoinTrip, setUserJoinTrip ] = useState<boolean>(false)
   const [ joinIsLoading, setJoinIsLoading ] = useState<boolean>(false)
+  const [ isPastTrip, setIsPastTrip ] = useState<boolean>(false)
+  const [ isAuthorTrip, setIsAuthorTrip ] = useState<boolean>(false)
+  const [ isCancelledTrip, setIsCancelledTrip ] = useState<boolean>(false)
+  const [ areSpotsTrip, setAreSpotsTrip ] = useState<boolean>(false)
+  const [ totalAvailableSpots, setTotalAvailableSpots ] = useState<number>(0)
 
   useEffect(() => {
     if (tripID) {
@@ -38,8 +45,6 @@ export const Trip = () => {
         if (success && trip){
           setCurrentTrip(trip)
           setCurrentTripState('success')
-          const travellerFound = trip.travelers.find((traveler: {username: string, avatar: string, uid: string}) => traveler.uid === userID)
-          setUserJoinTrip(travellerFound !== undefined)
         } else {
           setCurrentTripState(errorMessage || 'error')
         }
@@ -50,6 +55,18 @@ export const Trip = () => {
     }
 
   }, [])
+
+  useEffect(() => {
+    if (currentTrip) {
+      const travellerFound = currentTrip.travelers.find((traveler: {username: string, avatar: string, uid: string}) => traveler.uid === userID)
+      setUserJoinTrip(travellerFound !== undefined)
+      setIsPastTrip(new Date(currentTrip.date_from) < new Date())
+      setIsAuthorTrip(userID === currentTrip.author_uid)
+      setIsCancelledTrip(currentTrip.cancelled)
+      setAreSpotsTrip(currentTrip.travelers.length < currentTrip.spots)
+      setTotalAvailableSpots(currentTrip.spots - currentTrip.travelers.length)
+    }
+  }, [currentTrip, userID])
 
   const calcTripDays = (iniDateStr: string, endDateStr: string) => {
     const iniDate = new Date(iniDateStr)
@@ -106,15 +123,61 @@ export const Trip = () => {
 
   const modalCancelTrip = useDisclosure()
   const cancelRef = useRef()
-
   if (currentTripState === 'loading') return <LoadingProfile />
   if (currentTripState !== 'success') return currentTripState !== 'error' ? <NotFound errorMessage={currentTripState} /> : <NotFound />
-  if (currentTrip && tripID)
+  if (currentTrip && tripID) {
+    const almostFull = totalAvailableSpots > 1 && totalAvailableSpots < 6
     return (
       <WebContainer>
         <Flex flexDirection='column' rowGap='5'>
           <Card>
             <CardHeader pb='0'>
+              {(!isPastTrip && !isCancelledTrip) && !areSpotsTrip &&
+              <Flex position='absolute' top='0' right='0'>
+                <Tag
+                  size='lg'
+                  color='white'
+                  background='linear-gradient(90deg, #ffcbb3, #e50015)'
+                  borderRadius='none'
+                  borderBottomLeftRadius='10'
+                  borderTopRightRadius='5'
+                >
+                  <TagLeftIcon fontSize='20' as={MdBolt} />
+                  <TagLabel fontWeight='bold' textTransform='uppercase'>Full</TagLabel>
+                </Tag>
+              </Flex>}
+
+              {(!isPastTrip && !isCancelledTrip) && totalAvailableSpots === 1 &&
+              <Flex position='absolute' top='0' right='0'>
+                <Tag
+                  size='lg'
+                  color='white'
+                  background='linear-gradient(90deg, #8b4dcf, #ff685d)'
+                  borderRadius='none'
+                  borderBottomLeftRadius='10'
+                  borderTopRightRadius='5'
+                >
+                  <TagLeftIcon fontSize='20' as={MdBolt} />
+                  <TagLabel fontWeight='bold' textTransform='uppercase'>1 spot left</TagLabel>
+                </Tag>
+              </Flex>
+              }
+
+              {(!isPastTrip && !isCancelledTrip) && almostFull &&
+              <Flex position='absolute' top='0' right='0'>
+                <Tag
+                  size='lg'
+                  color='white'
+                  background='linear-gradient(90deg, #8b4dcf, #6ab3dd)'
+                  borderRadius='none'
+                  borderBottomLeftRadius='10'
+                  borderTopRightRadius='5'
+                >
+                  <TagLeftIcon fontSize='20' as={MdBolt} />
+                  <TagLabel fontWeight='bold' textTransform='uppercase'>Almost full</TagLabel>
+                </Tag>
+              </Flex>}
+
               <Image
                 src={currentTrip.image}
                 alt={currentTrip.country}
@@ -124,6 +187,7 @@ export const Trip = () => {
                 h={{base: '200px', md: '400px'}}
                 mb='4'
                 borderRadius='10'
+                filter={isPastTrip || isCancelledTrip ? 'grayscale(100%)' : 'none'}
               ></Image>
               <Heading variant='h2' as='h2' fontSize='xl'>{currentTrip.title}</Heading>
             </CardHeader>
@@ -149,25 +213,31 @@ export const Trip = () => {
                   </Flex>
                 </Flex>
                 <Flex columnGap='4' rowGap='2' direction={{base: 'column', md: 'row'}}>
-                  {currentTrip.travelers.length >= currentTrip.spots && !currentTrip.cancelled &&
+                  {!isPastTrip && !areSpotsTrip && !isCancelledTrip &&
                   <Tag size='lg' colorScheme='pink'>
-                    <TagLeftIcon fontSize='20' as={MdErrorOutline} />
+                    <TagLeftIcon fontSize='20' as={CgUnavailable} />
                     <TagLabel>No spots available</TagLabel>
                   </Tag>
                   }
-                  {currentTrip.cancelled &&
+                  {isPastTrip && !isCancelledTrip &&
                   <Tag size='lg' colorScheme='gray'>
+                    <TagLeftIcon fontSize='20' as={PiAirplaneLanding} />
+                    <TagLabel>Past trip</TagLabel>
+                  </Tag>
+                  }
+                  {isCancelledTrip &&
+                  <Tag size='lg' colorScheme='red'>
                     <TagLeftIcon fontSize='20' as={MdErrorOutline} />
                     <TagLabel>Trip cancelled</TagLabel>
                   </Tag>
                   }
-                  {userID !== currentTrip.author_uid && !currentTrip.cancelled && currentTrip.travelers.length < currentTrip.spots && !userJoinTrip &&
+                  {!isAuthorTrip && !isCancelledTrip && !isPastTrip && areSpotsTrip && !userJoinTrip &&
                   <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>Join trip</Button>
                   }
-                  {userID !== currentTrip.author_uid && !currentTrip.cancelled && userJoinTrip &&
+                  {!isAuthorTrip && !isCancelledTrip && !isPastTrip && userJoinTrip &&
                   <Button onClick={handleLeaveTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>Leave trip</Button>
                   }
-                  {userID === currentTrip.author_uid && !currentTrip.cancelled &&
+                  {isAuthorTrip && !isCancelledTrip && !isPastTrip &&
                   <>
                   <Button onClick={handleEditTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>Edit trip</Button>
                   <Button onClick={modalCancelTrip.onOpen} colorScheme='red' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>Cancel trip</Button>
@@ -251,4 +321,5 @@ export const Trip = () => {
         />
       </WebContainer>
     )
+  }
 }

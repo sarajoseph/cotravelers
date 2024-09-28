@@ -6,9 +6,10 @@ import { Box, Divider, Flex, Heading, Text, Link as ChakraLink } from '@chakra-u
 import { useTrip } from '../../hooks/useTrip'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from '../common/NotFound'
-import { TripsList } from '../../components/TripsList'
+import { TripCard } from '../../components/TripCard'
 import { Link as RouterLink } from 'react-router-dom'
 import { urlTrips } from '../../store/constantsStore'
+import { sortByDateFrom } from '../../global/logic'
 
 export const MyTrips = () => {
   const user = useUserStore((state) => ({uid: state.uid}))
@@ -38,10 +39,12 @@ export const MyTrips = () => {
   if (myTripsState === 'loading') return <LoadingProfile />
   if (myTripsState !== 'success') return myTripsState !== 'error' ? <NotFound errorMessage={myTripsState} /> : <NotFound />
   if (myTrips) {
-    const authorTrips = myTrips.filter((trip: any) => trip.author_uid === userID)
-    const otherTrips = myTrips.filter((trip: any) => trip.author_uid !== userID)
+    const authorTrips = myTrips.filter((trip: any) => (trip.author_uid === userID) && new Date(trip.date_from) >= new Date() && !trip.cancelled).sort((a: any, b: any) => sortByDateFrom(a.date_from, b.date_from))
+    const otherTrips = myTrips.filter((trip: any) => (trip.author_uid !== userID) && new Date(trip.date_from) >= new Date() && !trip.cancelled).sort((a: any, b: any) => sortByDateFrom(a.date_from, b.date_from))
+    const myPastTrips = myTrips.filter((trip: any) => new Date(trip.date_from) < new Date() && !trip.cancelled).sort((a: any, b: any) => sortByDateFrom(a.date_from, b.date_from))
     const authorTripsExist = (authorTrips && authorTrips.length > 0) ? true : false
     const otherTripsExist = (otherTrips && otherTrips.length > 0) ? true : false
+    const myPastTripsExist = (myPastTrips && myPastTrips.length > 0) ? true : false
 
     return (
       <WebContainer>
@@ -59,7 +62,7 @@ export const MyTrips = () => {
           <Heading as='h3' fontSize='3xl' mb='8'>Trips you have created</Heading>}
           <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
           {authorTrips.map((trip: any) => {
-            return <TripsList key={trip.id} trip={trip} />
+            return <TripCard key={trip.id} trip={trip} />
           })}
           </Flex>
         </Box>
@@ -75,7 +78,22 @@ export const MyTrips = () => {
           <Heading as='h3' fontSize='3xl' mb='8'>Your trips created by others</Heading>}
           <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
           {otherTrips.map((trip: any) => {
-            return <TripsList key={trip.id} trip={trip} />
+            return <TripCard key={trip.id} trip={trip} />
+          })}
+          </Flex>
+        </Box>
+        }
+
+        {myPastTripsExist && (otherTripsExist || authorTripsExist) &&
+          <Divider p='8' />
+        }
+
+        {myPastTripsExist &&
+        <Box>
+          <Heading as='h3' fontSize='3xl' mb='8'>Your trips from the past</Heading>
+          <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
+          {myPastTrips.map((trip: any) => {
+            return <TripCard key={trip.id} trip={trip} />
           })}
           </Flex>
         </Box>
