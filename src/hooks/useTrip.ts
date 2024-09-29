@@ -86,7 +86,7 @@ export const useTrip = (): UseTripProps => {
         user_host_id: userID,
         travelers: [userID],
         cancel: false,
-        date_created: Date.now()
+        date_created: new Date(Date.now())
       }
       const docRef = await addDoc(collection(db, 'trips'), data)
       const tripID = docRef.id

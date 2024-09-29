@@ -42,11 +42,10 @@ export const useProfile = () => {
     }
   }
 
-  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>): Promise<CommonResponse> => {
-    if (e.target.files === null) return handleNotFoundError('Error no file selected')
+  const handleUploadImage = async (imageFile: File): Promise<CommonResponse> => {
+    if (imageFile === null) return handleNotFoundError('Error no file selected')
 
-    const imageFile = e.target.files[0]
-    const { success, errorMessage } = validateAvatar(e)
+    const { success, errorMessage } = validateAvatar(imageFile)
 
     if (!success && errorMessage) {
       return handleNotFoundError(errorMessage)
@@ -73,6 +72,62 @@ export const useProfile = () => {
     return handleFirebaseError(uploadFileFirebaseErrorMessage)
   }
 
+  const validateAvatar = (imageFile: File): CommonResponse => {
+    const allowedFormats = ['image/png', 'image/jpeg', 'image/gif']
+
+    if (!allowedFormats.includes(imageFile.type)) {
+      return handleNotFoundError('Only .png, .jpg and .gif formats are allowed')
+    }
+    const maxSizeInMB = 2
+    const fileSizeInMB = imageFile.size / 1024 / 1024 // Convertir a MB
+    if (fileSizeInMB > maxSizeInMB) {
+      return handleNotFoundError('File must be smaller than '+maxSizeInMB+'MB')
+    }
+    return {
+      success: true
+    }
+  }
+
+  const resizeAvatar = (imageFile: File, callback: (resizedFile: File) => void) => {
+    const img = new Image()
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const MAX_WIDTH = 300
+    const MAX_HEIGHT = 300
+
+    img.onload = () => {
+      let width = img.width
+      let height = img.height
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width
+          width = MAX_WIDTH
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height
+          height = MAX_HEIGHT
+        }
+      }
+
+      canvas.width = width
+      canvas.height = height
+      ctx?.drawImage(img, 0, 0, width, height)
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const resizedFile = new File([blob], imageFile.name, { type: imageFile.type })
+          callback(resizedFile)  // Pasamos la imagen redimensionada al callback
+        } else {
+          console.error('Error creating Blob')
+        }
+      }, imageFile.type, 1)
+    }
+
+    img.src = URL.createObjectURL(imageFile)
+  }
+
   const validateBirthday = (value: string): true | string => {
     const today = new Date()
     const selectedDate = new Date(value)
@@ -86,32 +141,11 @@ export const useProfile = () => {
     return age >= 18 || 'You must be at least 18 years old'
   }
 
-  const validateAvatar = (e: React.ChangeEvent<HTMLInputElement>): CommonResponse => {
-    if (e.target.files === null) {
-      return handleNotFoundError('Error no file selected')
-    }
-
-    const imageFile = e.target.files[0]
-    const allowedFormats = ['image/png', 'image/jpeg', 'image/gif']
-
-    if (!allowedFormats.includes(imageFile.type)) {
-      return handleNotFoundError('Only .png, .jpg and .gif formats are allowed')
-    }
-
-    const maxSizeInMB = 2
-    const fileSizeInMB = imageFile.size / 1024 / 1024 // Convertir a MB
-    if (fileSizeInMB > maxSizeInMB) {
-      return handleNotFoundError('File must be smaller than '+maxSizeInMB+'MB')
-    }
-    return {
-      success: true
-    }
-  }
-
   return {
     handleUploadImage,
     uploadingAvatar,
     validateBirthday,
-    getProfileByUID
+    getProfileByUID,
+    resizeAvatar
   }
 }

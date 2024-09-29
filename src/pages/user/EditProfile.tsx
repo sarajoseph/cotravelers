@@ -34,7 +34,7 @@ export const EditProfile = () => {
   }))
   const { hobbies } = useHobbies()
   const { saveUserData } = useUser()
-  const { handleUploadImage, uploadingAvatar, validateBirthday } = useProfile()
+  const { handleUploadImage, uploadingAvatar, resizeAvatar, validateBirthday } = useProfile()
   const { register, setValue, formState: { errors }, trigger } = useForm<FormProfileInputs>({
     mode: 'onChange' // Habilita las validaciones en tiempo real
   })
@@ -64,18 +64,28 @@ export const EditProfile = () => {
   }, [])
 
   const handleAvatarOnChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { success, errorMessage } = await handleUploadImage(e)
-    if (!success) {
-      setErrorUploadingAvatar(errorMessage ? errorMessage : 'Error uploading avatar')
-    } else {
-      setErrorUploadingAvatar(false)
-      toast({
-        title: 'Awesome!',
-        description: 'Image updated succesfully',
-        status: 'success',
-        duration: 9000,
-        isClosable: true,
+    const files = e.target.files
+    if (files && files.length > 0) {
+      const imageFile: File = files[0]
+
+      resizeAvatar(imageFile, async (resizedFile: File) => {
+        const { success, errorMessage } = await handleUploadImage(resizedFile)
+        if (!success) {
+          setErrorUploadingAvatar(errorMessage ? errorMessage : 'Error uploading avatar')
+        } else {
+          setErrorUploadingAvatar(false)
+          toast({
+            title: 'Awesome!',
+            description: 'Image updated succesfully',
+            status: 'success',
+            duration: 9000,
+            isClosable: true,
+          })
+        }
       })
+
+    } else {
+      setErrorUploadingAvatar('No file was selected')
     }
   }, [toast])
 

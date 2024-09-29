@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
 
 export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
-  console.log(oTrip)
   const { createTrip, editTrip } = useTrip()
   const navigate = useNavigate()
   const toast = useToast()
