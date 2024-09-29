@@ -62,3 +62,30 @@ export const sortByDateCreated = (dateA: any, dateB: any, ascending: boolean = f
 }
 
 export const removeAccents = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+export const getMonthName = (monthNumber: number, language: 'en' | 'es' = 'en') => {
+  const months = {
+    en: [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ],
+    es: [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ]
+  }
+
+  return months[language][monthNumber - 1] || ''
+}
+
+export const getMonthLastDay = (monthNumber: number, year: number) => {
+  const monthLastDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+  // Comprobación de año bisiesto
+  if (monthNumber === 2) {
+    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)
+    return isLeapYear ? 29 : monthLastDays[monthNumber - 1]
+  }
+
+  return monthLastDays[monthNumber - 1]
+}

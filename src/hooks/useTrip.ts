@@ -111,7 +111,7 @@ export const useTrip = (): UseTripProps => {
       querySnapshot.forEach(async (userDoc) => {
         const userTrips = userDoc.data().trips
 
-        if (userTrips.includes(tripID)) {
+        if (Array.isArray(userTrips) && userTrips.includes(tripID)) {
           const userDocRef = userDoc.ref
           await updateDoc(userDocRef, {
             trips: arrayRemove(tripID)

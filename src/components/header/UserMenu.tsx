@@ -39,7 +39,7 @@ export const UserMenu = () => {
         <Avatar
           name={username}
           src={avatar}
-          size='lg'
+          size='md'
         />
       </MenuButton>
     }
