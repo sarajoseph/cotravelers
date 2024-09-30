@@ -13,6 +13,7 @@ export type UserProps = {
   hobbies: string[],
   name: string,
   public_email: string,
+  selectedLanguage: 'es' | 'en',
   surname: string,
   type: string,
   uid: string,
@@ -22,6 +23,7 @@ export type UserProps = {
 }
 export type UserStore = UserProps & {
   setAvatar: (avatar: UserProps['avatar']) => void
+  setSelectedLanguage: (selectedLanguage: UserProps['selectedLanguage']) => void
   setUserIsLogin: (userIsLogin: UserProps['userIsLogin']) => void
   setUserData: (data: any) => void
   resetUser: () => void

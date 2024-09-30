@@ -5,8 +5,10 @@ import { useState } from 'react'
 import { currentCoin, urlTrip } from '../../store/constantsStore'
 import { useNavigate } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
+import { useTranslation } from 'react-i18next'
 
 export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
+  const { t } = useTranslation()
   const { createTrip, editTrip } = useTrip()
   const navigate = useNavigate()
   const toast = useToast()
@@ -113,10 +115,10 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
     <form onSubmit={handleSubmit}>
       <Flex direction={{ base: 'column', md: 'row'}} wrap='wrap' columnGap='4' rowGap='4' mb='4'>
         <FormControl w={{ base: '100%', md: 'auto'}} isRequired>
-          <FormLabel variant='profile'>Country</FormLabel>
+          <FormLabel variant='profile'>{t('country')}</FormLabel>
           <Select
             size='md'
-            placeholder='Select the country'
+            placeholder={t('selectTheCountry')}
             value={selectedCountry}
             onChange={(e) => setSelectedCountry(e.target.value)}
           >
@@ -126,7 +128,7 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
           </Select>
         </FormControl>
         <FormControl w={{ base: '100%', md: 'auto'}} isRequired isInvalid={areInvalidDates || isFromDatePreviousToday}>
-          <FormLabel variant='profile'>From</FormLabel>
+          <FormLabel variant='profile'>{t('from')}</FormLabel>
           <Input
             size='md'
             type='date'
@@ -135,14 +137,14 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
             min={today}
           />
           {areInvalidDates && (
-            <FormErrorMessage>"From" date cannot be later than "To" date.</FormErrorMessage>
+            <FormErrorMessage>{t('fromDateCannotBeLater')}</FormErrorMessage>
           )}
           {isFromDatePreviousToday && (
-            <FormErrorMessage>"From" date cannot be previous than today.</FormErrorMessage>
+            <FormErrorMessage>{t('fromDateCannotBePrevious')}</FormErrorMessage>
           )}
         </FormControl>
         <FormControl w={{ base: '100%', md: 'auto'}} isRequired isInvalid={areInvalidDates || isToDatePreviousToday}>
-          <FormLabel variant='profile'>To</FormLabel>
+          <FormLabel variant='profile'>{t('to')}</FormLabel>
           <Input
             size='md'
             type='date'
@@ -151,16 +153,16 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
             min={fromDate || today}
           />
           {areInvalidDates && (
-            <FormErrorMessage>"To" date cannot be previous than "From" date.</FormErrorMessage>
+            <FormErrorMessage>{t('toDateCannotBeLater')}</FormErrorMessage>
           )}
           {isToDatePreviousToday && (
-            <FormErrorMessage>"To" date cannot be previous than today.</FormErrorMessage>
+            <FormErrorMessage>{t('toDateCannotBePrevious')}</FormErrorMessage>
           )}
         </FormControl>
       </Flex>
       <Flex direction={{ base: 'column', md: 'row'}} wrap='wrap' columnGap='4' rowGap='4' mb='8'>
         <FormControl w={{ base: '100%', md: 'auto'}} maxW={{ base: '100%', md: '10%'}} isRequired>
-          <FormLabel variant='profile'>Spots</FormLabel>
+          <FormLabel variant='profile'>{t('spots')}</FormLabel>
           <NumberInput
             size='md'
             max={100}
@@ -177,7 +179,7 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
           </NumberInput>
         </FormControl>
         <FormControl w={{ base: '100%', md: 'auto'}} maxW={{ base: '100%', md: '15%'}} isRequired>
-          <FormLabel variant='profile'>Budget</FormLabel>
+          <FormLabel variant='profile'>{t('budget')}</FormLabel>
           <InputGroup>
             <NumberInput
               size='md'
@@ -198,7 +200,7 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
         </FormControl>
       </Flex>
       <FormControl mb='8' isRequired>
-        <FormLabel variant='profile'>Title</FormLabel>
+        <FormLabel variant='profile'>{t('title')}</FormLabel>
         <Input
           size='md'
           type='text'
@@ -208,10 +210,10 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
       </FormControl>
       <FormControl mb='8' isRequired>
         <Flex alignItems='center'>
-          <FormLabel variant='profile'>Description</FormLabel>
+          <FormLabel variant='profile'>{t('description')}</FormLabel>
         </Flex>
         <Textarea
-          placeholder='Description of the trip here...'
+          placeholder={t('tripDescTextarea')}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -223,7 +225,7 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
           width={{ base: '100%', md: 'auto' }}
           minW='150px'
           isLoading={isLoading}
-        >{oTrip ? 'Save' : 'Post'}</Button>
+        >{oTrip ? t('save') : t('post')}</Button>
       </Flex>
     </form>
   )

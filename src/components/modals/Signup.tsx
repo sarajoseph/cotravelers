@@ -18,8 +18,10 @@ import {
 } from '@chakra-ui/react'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { handleCloseAndOpenModal, handleCloseModal } from '../../global/logic'
+import { useTranslation } from 'react-i18next'
 
 export const Signup = ({isOpen, onClose, openLoginModal}: {isOpen: boolean, onClose: () => void, openLoginModal: () => void}) => {
+  const { t } = useTranslation()
   const { signup, isSuccess, isLoading, isError, errorMessage, initializeStates } = useSignup()
   const initialRef = useRef(null)
   const finalRef = useRef(null)
@@ -39,8 +41,8 @@ export const Signup = ({isOpen, onClose, openLoginModal}: {isOpen: boolean, onCl
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading as='h2' fontSize='2xl' pb='1'>Welcome to Cotravelers</Heading>
-          <Heading as='h3' fontSize='md'>Sign up below to start</Heading>
+          <Heading as='h2' fontSize='2xl' pb='1'>{t('welcomeToCotravelers')}</Heading>
+          <Heading as='h3' fontSize='md'>{t('registerBelow')}</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -66,7 +68,7 @@ export const Signup = ({isOpen, onClose, openLoginModal}: {isOpen: boolean, onCl
             {isSuccess &&
             <Alert status='success'>
               <AlertIcon />
-              Registration has been completed successfully and an email of verification has been sent to your inbox
+              {t('resgisterSuccess')}
             </Alert>
             }
             <Button
@@ -76,11 +78,11 @@ export const Signup = ({isOpen, onClose, openLoginModal}: {isOpen: boolean, onCl
               rightIcon={<ArrowForwardIcon />}
               isLoading={isLoading}
               ref={finalRef}
-            >Sign up</Button>
+            >{t('signup')}</Button>
           </form>
         </ModalBody>
         <ModalFooter className='flex flex-col !items-start'>
-          <p>Already have an account? <Button onClick={() => handleCloseAndOpenModal(closeModal, openLoginModal)} variant='link'>Go to Login</Button></p>
+          <p>{t('alreadyHaveAnAccount?')} <Button onClick={() => handleCloseAndOpenModal(closeModal, openLoginModal)} variant='link'>{t('goToLogin')}</Button></p>
         </ModalFooter>
       </ModalContent>
     </Modal>

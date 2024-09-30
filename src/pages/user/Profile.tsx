@@ -10,9 +10,16 @@ import { WorldMap } from '../../components/WorldMap'
 import { useProfile } from '../../hooks/useProfile'
 import { useEffect, useState } from 'react'
 import { NotFound } from '../common/NotFound'
+import { useTranslation } from 'react-i18next'
+import { useUserStore } from '../../store/userStore'
 
 export const Profile = () => {
+  const { t } = useTranslation()
   const { uid } = useParams()
+  const user = useUserStore((state) => ({
+    selectedLanguage: state.selectedLanguage
+  }))
+  const selectedLanguage = user.selectedLanguage
   const { getProfileByUID } = useProfile()
   const { hobbies } = useHobbies()
   const [ currentProfile, setCurrentProfile ] = useState<{ [x: string]: any } | null>(null)
@@ -44,7 +51,7 @@ export const Profile = () => {
         <Flex flexDirection='column' rowGap='5'>
           <Card>
             <CardHeader>
-              <Heading variant='h2' as='h2' fontSize='xl'>@{currentProfile.username}'s profile</Heading>
+              <Heading variant='h2' as='h2' fontSize='xl'>{t('profileOf')} @{currentProfile.username}{t('sProfile')}</Heading>
             </CardHeader>
             <CardBody>
               <Flex columnGap='5'>
@@ -66,7 +73,7 @@ export const Profile = () => {
               <Flex flexDirection='column' rowGap='5' mt='10'>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                    Bio
+                  {t('bio')}
                   </Heading>
                   <Text>
                     {currentProfile.bio}
@@ -74,27 +81,25 @@ export const Profile = () => {
                 </Box>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                    Hobbies
+                  {t('hobbies')}
                   </Heading>
                   <Flex gap={4} wrap='wrap'>
-                    {
-                      (hobbies && currentProfile.hobbies !== undefined) &&
-                        (currentProfile.hobbies).map((hobby: string) => {
-                          const matchingHobby = hobbies.find((h: DocumentData) => h.id === hobby )
-                          return matchingHobby && (
-                            <Tag key={hobby} size='lg' colorScheme='gray' padding='3' variant='subtle'>
-                              <TagLeftIcon as={matchingHobby.icon} />
-                              <TagLabel pl={2}>{matchingHobby.name}</TagLabel>
-                            </Tag>
-                          )
-                        }
-                      )
-                    }
+                    {(hobbies && currentProfile.hobbies !== undefined) &&
+                      (currentProfile.hobbies).map((hobby: string) => {
+                        const matchingHobby = hobbies.find((h: DocumentData) => h.id === hobby )
+                        return matchingHobby && (
+                          <Tag key={hobby} size='lg' colorScheme='gray' padding='3' variant='subtle'>
+                            <TagLeftIcon as={matchingHobby.icon} />
+                            <TagLabel pl={2}>{matchingHobby[selectedLanguage]}</TagLabel>
+                          </Tag>
+                        )
+                      }
+                    )}
                   </Flex>
                 </Box>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                    Countries visited
+                  {t('countriesVisited')}
                   </Heading>
                   <WorldMap countriesVisited={currentProfile.countries} />
                 </Box>

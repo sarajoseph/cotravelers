@@ -7,8 +7,10 @@ import { useEffect, useState } from 'react'
 import { LoadingProfile } from '../../components/icons/LoadingProfile'
 import { NotFound } from '../common/NotFound'
 import { TripForm } from '../../components/forms/TripForm'
+import { useTranslation } from 'react-i18next'
 
 export const EditTrip = () => {
+  const { t } = useTranslation()
   const { tripID } = useParams()
   const { getTrip } = useTrip()
   const [ currentTrip, setCurrentTrip ] = useState<{ [x: string]: any } | null>(null)
@@ -39,7 +41,7 @@ export const EditTrip = () => {
       <Flex flexDirection='column' rowGap='5'>
         <Card>
           <CardHeader>
-            <Heading variant='h2' as='h2' fontSize='xl'>Edit trip</Heading>
+            <Heading variant='h2' as='h2' fontSize='xl'>{t('editTrip')}</Heading>
           </CardHeader>
           <CardBody>
             <TripForm oTrip={{...currentTrip, tripID}} />

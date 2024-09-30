@@ -19,8 +19,10 @@ import { useUserStore } from '../../store/userStore'
 import { CancelTripModal } from '../../components/modals/CancelTripModal'
 import { PiAirplaneLanding } from 'react-icons/pi'
 import { CgUnavailable } from 'react-icons/cg'
+import { useTranslation } from 'react-i18next'
 
 export const Trip = () => {
+  const { t } = useTranslation()
   const { tripID } = useParams()
   const { getTrip, joinTrip, leaveTrip } = useTrip()
   const navigate = useNavigate()
@@ -143,7 +145,7 @@ export const Trip = () => {
                   borderTopRightRadius='5'
                 >
                   <TagLeftIcon fontSize='20' as={MdBolt} />
-                  <TagLabel fontWeight='bold' textTransform='uppercase'>Full</TagLabel>
+                  <TagLabel fontWeight='bold' textTransform='uppercase'>{t('full')}</TagLabel>
                 </Tag>
               </Flex>}
 
@@ -158,7 +160,7 @@ export const Trip = () => {
                   borderTopRightRadius='5'
                 >
                   <TagLeftIcon fontSize='20' as={MdBolt} />
-                  <TagLabel fontWeight='bold' textTransform='uppercase'>1 spot left</TagLabel>
+                  <TagLabel fontWeight='bold' textTransform='uppercase'>1 {t('spotLeft')}</TagLabel>
                 </Tag>
               </Flex>
               }
@@ -174,7 +176,7 @@ export const Trip = () => {
                   borderTopRightRadius='5'
                 >
                   <TagLeftIcon fontSize='20' as={MdBolt} />
-                  <TagLabel fontWeight='bold' textTransform='uppercase'>Almost full</TagLabel>
+                  <TagLabel fontWeight='bold' textTransform='uppercase'>{t('almostFull')}</TagLabel>
                 </Tag>
               </Flex>}
 
@@ -194,7 +196,7 @@ export const Trip = () => {
             <CardBody>
               <Flex direction={{ base: 'column', md: 'row'}} justifyContent={{ base: 'start', md: 'space-between'}}  rowGap='4'>
                 <Flex direction={{ base: 'column', md: 'row'}} columnGap='2' rowGap='2' alignItems={{ base: 'starts', md:'center'}}>
-                  <Text>Created by </Text>
+                  <Text>{t('createdBy')} </Text>
                   <Flex columnGap='2' alignItems='center'>
                     <Avatar
                       name={currentTrip.author_username}
@@ -216,31 +218,31 @@ export const Trip = () => {
                   {!isPastTrip && !areSpotsTrip && !isCancelledTrip &&
                   <Tag size='lg' colorScheme='pink'>
                     <TagLeftIcon fontSize='20' as={CgUnavailable} />
-                    <TagLabel>No spots available</TagLabel>
+                    <TagLabel>{t('noSpotsAvailable')}</TagLabel>
                   </Tag>
                   }
                   {isPastTrip && !isCancelledTrip &&
                   <Tag size='lg' colorScheme='gray'>
                     <TagLeftIcon fontSize='20' as={PiAirplaneLanding} />
-                    <TagLabel>Past trip</TagLabel>
+                    <TagLabel>{t('pastTrip')}</TagLabel>
                   </Tag>
                   }
                   {isCancelledTrip &&
                   <Tag size='lg' colorScheme='red'>
                     <TagLeftIcon fontSize='20' as={MdErrorOutline} />
-                    <TagLabel>Trip cancelled</TagLabel>
+                    <TagLabel>{t('tripCancelled')}</TagLabel>
                   </Tag>
                   }
                   {!isAuthorTrip && !isCancelledTrip && !isPastTrip && areSpotsTrip && !userJoinTrip &&
-                  <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>Join trip</Button>
+                  <Button onClick={handleJoinTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>{t('joinTrip')}</Button>
                   }
                   {!isAuthorTrip && !isCancelledTrip && !isPastTrip && userJoinTrip &&
-                  <Button onClick={handleLeaveTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>Leave trip</Button>
+                  <Button onClick={handleLeaveTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}} isLoading={joinIsLoading}>{t('leaveTrip')}</Button>
                   }
                   {isAuthorTrip && !isCancelledTrip && !isPastTrip &&
                   <>
-                  <Button onClick={handleEditTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>Edit trip</Button>
-                  <Button onClick={modalCancelTrip.onOpen} colorScheme='red' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>Cancel trip</Button>
+                  <Button onClick={handleEditTrip} colorScheme='teal' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>{t('editTrip')}</Button>
+                  <Button onClick={modalCancelTrip.onOpen} colorScheme='red' w={{ base: '100%', md: 'auto'}} h={{base: '10', md: '100%'}}>{t('cancelTrip')}</Button>
                   </>}
                 </Flex>
               </Flex>
@@ -259,11 +261,11 @@ export const Trip = () => {
                 </Flex>
                 <Flex columnGap='1' alignItems='center'>
                   <IoTime size='25' color={iconColor} />
-                  { calcTripDays(currentTrip.date_from, currentTrip.date_to) } days
+                  { calcTripDays(currentTrip.date_from, currentTrip.date_to) } {t('days')}
                 </Flex>
                 <Flex columnGap='1' alignItems='center'>
                   <IoIosPeople size='30' color={iconColor} />
-                  { currentTrip.spots } spots
+                  { currentTrip.spots } {t('spots')}
                 </Flex>
                 <Flex columnGap='1' alignItems='center'>
                   <IoMdPricetag size='25' color={iconColor} />
@@ -281,7 +283,7 @@ export const Trip = () => {
               <Flex flexDirection='column' rowGap='5' mt='10'>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                    Description
+                    {t('description')}
                   </Heading>
                   <Text>
                     {currentTrip.description}
@@ -291,7 +293,7 @@ export const Trip = () => {
               <Flex flexDirection='column' rowGap='5' mt='10'>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
-                    Cotravelers
+                    {t('cotravelers')}
                   </Heading>
                   <AvatarGroup size='md' max={2}>
                     {currentTrip.travelers.map((traveler: any) => {

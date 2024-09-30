@@ -3,11 +3,13 @@ import { UsernameIcon, EmailIcon, PasswordIcon } from '../icons/UserFieldsIcons'
 import { FormRegisterInputs } from '../../global/types'
 import { Alert, AlertIcon, Button, FormControl, FormLabel, Input, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const EmailField = ({register, initialRef}: {register?: UseFormRegister<FormRegisterInputs>, initialRef?: React.MutableRefObject<null>}) => {
+  const { t } = useTranslation()
   return (
     <FormControl isRequired>
-      <FormLabel>Email</FormLabel>
+      <FormLabel>{t('email')}</FormLabel>
       <InputGroup>
         <InputLeftElement pointerEvents='none'>
           <EmailIcon />
@@ -15,10 +17,10 @@ export const EmailField = ({register, initialRef}: {register?: UseFormRegister<F
         { !register ? <Input id='emailLogin' type='text' ref={initialRef} /> :
           <Input id='emailRegister' type='text'
             {...register('email', {
-              required: 'Email is required',
+              required: t('emailIsRequired'),
               pattern: {
                 value: /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
-                message: 'Please enter a valid email',
+                message: t('pleaseEnterValidEmail'),
               }
             })}
           />
@@ -29,11 +31,12 @@ export const EmailField = ({register, initialRef}: {register?: UseFormRegister<F
 }
 
 export const PasswordField = ({register}: {register?: UseFormRegister<FormRegisterInputs>}) => {
+  const { t } = useTranslation()
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
   return (
     <FormControl isRequired>
-      <FormLabel>Password</FormLabel>
+      <FormLabel>{t('password')}</FormLabel>
       <InputGroup>
         <InputLeftElement pointerEvents='none'>
           <PasswordIcon />
@@ -41,17 +44,17 @@ export const PasswordField = ({register}: {register?: UseFormRegister<FormRegist
         { !register ? <Input id='passwordLogin' type={show ? 'text' : 'password'} /> :
           <Input id='passwordRegister' type={show ? 'text' : 'password'}
             {...register('password', {
-              required: 'Password is required',
+              required: t('passwordIsRequired'),
               minLength: {
                 value: 7,
-                message: 'Password must be at least 7 characters'
+                message: t('passwordChars')
               }
             })}
           />
         }
         <InputRightElement width='4.5rem'>
         <Button size='xs' onClick={handleClick}>
-          {show ? 'Hide' : 'Show'}
+          {show ? t('hide') : t('show')}
         </Button>
       </InputRightElement>
       </InputGroup>
@@ -60,9 +63,10 @@ export const PasswordField = ({register}: {register?: UseFormRegister<FormRegist
 }
 
 export const UsernameField = ({register, initialRef}: {register?: UseFormRegister<FormRegisterInputs>, initialRef?: React.MutableRefObject<HTMLInputElement | null>}) => {
+  const { t } = useTranslation()
   return (
     <FormControl isRequired>
-      <FormLabel>Username</FormLabel>
+      <FormLabel>{t('username')}</FormLabel>
       <InputGroup>
         <InputLeftElement pointerEvents='none'>
           <UsernameIcon />
@@ -73,11 +77,11 @@ export const UsernameField = ({register, initialRef}: {register?: UseFormRegiste
               required: 'Username is required',
               minLength: {
                 value: 3,
-                message: 'Username must be at least 3 characters'
+                message: t('usernameAtLeast3Chars')
               },
               maxLength: {
                 value: 10,
-                message: 'Username must be at most 10 characters'
+                message: t('usernameAtMost10Chars')
               }
             })}
             ref={(e) => {

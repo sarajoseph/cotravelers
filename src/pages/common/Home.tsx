@@ -15,8 +15,10 @@ import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { HomeDescription } from '../../components/HomeDescription'
 import { sortByDateCreated, sortByDateFrom } from '../../global/logic'
 import { TripFinder } from '../../components/TripFinder'
+import { useTranslation } from 'react-i18next'
 
 export const Home = () => {
+  const { t } = useTranslation()
   const { getAllTrips } = useTrip()
   const [ allTrips, setAllTrips ] = useState<{ [x: string]: any } | null>(null)
   const [ nextTrips, setNextTrips ] = useState<{ [x: string]: any } | null>(null)
@@ -60,7 +62,7 @@ export const Home = () => {
         {nextTripsState === 'loading' && <Loading /> }
         {nextTrips && nextTrips.length > 0 &&
         <Box mb='16'>
-          <Heading fontSize='3xl' mb='4'>Next trips</Heading>
+          <Heading fontSize='3xl' mb='4'>{t('nextTrips')}</Heading>
           <SwiperCarousel>
             {nextTrips.map((trip: any) => {
               return (
@@ -71,14 +73,14 @@ export const Home = () => {
             })}
           </SwiperCarousel>
           <Flex alignItems='center' justifyContent='center' pt='6'>
-            <Button as={Link} to={urlTrips} size='lg' colorScheme='teal' variant='outline' rightIcon={<ArrowForwardIcon />}>See all trips</Button>
+            <Button as={Link} to={urlTrips} size='lg' colorScheme='teal' variant='outline' rightIcon={<ArrowForwardIcon />}>{t('seeAllTrips')}</Button>
           </Flex>
         </Box>
         }
         {lastTripsState === 'loading' && <Loading /> }
         {lastTrips && lastTrips.length > 0 &&
         <Box mb='16'>
-          <Heading fontSize='3xl' mb='4'>Latest published trips</Heading>
+          <Heading fontSize='3xl' mb='4'>{t('latestPublishedTrips')}</Heading>
           <SwiperCarousel>
             {lastTrips.map((trip: any) => {
               return (
@@ -89,7 +91,7 @@ export const Home = () => {
             })}
           </SwiperCarousel>
           <Flex alignItems='center' justifyContent='center' pt='6'>
-            <Button as={Link} to={urlTrips} size='lg' colorScheme='teal' variant='outline' rightIcon={<ArrowForwardIcon />}>See all trips</Button>
+            <Button as={Link} to={urlTrips} size='lg' colorScheme='teal' variant='outline' rightIcon={<ArrowForwardIcon />}>{t('seeAllTrips')}</Button>
           </Flex>
         </Box>
         }

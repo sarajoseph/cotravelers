@@ -10,8 +10,10 @@ import { SwiperSlide } from 'swiper/react'
 import { SwiperCarousel } from '../../components/SwiperCarousel'
 import { sortByDateCreated, sortByDateFrom } from '../../global/logic'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export const Trips = () => {
+  const { t } = useTranslation()
   const [ searchParams ] = useSearchParams()
   const location = searchParams.get('location') || ''
   const toDate = searchParams.get('date') || ''
@@ -42,7 +44,7 @@ export const Trips = () => {
     return (
       <WebContainer>
         <Box>
-          <Heading mb='8'>Trips</Heading>
+          <Heading mb='8'>{t('trips')}</Heading>
           {currentTrips.length > 0 &&
           <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
             {currentTrips.map((trip: any) => {
@@ -53,12 +55,12 @@ export const Trips = () => {
           </Flex>
           }
           {currentTrips.length === 0 &&
-          <Text fontSize='lg' textAlign='center'>No trips found</Text>
+          <Text fontSize='lg' textAlign='center'>{t('noTripsFound')}</Text>
           }
         </Box>
         {pastTrips.length > 0 &&
         <Box mt='12'>
-          <Heading fontSize='2xl' mb='4'>Past trips</Heading>
+          <Heading fontSize='2xl' mb='4'>{t('pastTrips')}</Heading>
           <SwiperCarousel>
             {pastTrips.map((trip: any) => {
             return (

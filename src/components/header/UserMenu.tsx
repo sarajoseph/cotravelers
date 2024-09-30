@@ -8,8 +8,10 @@ import { Link } from 'react-router-dom'
 import { HamburgerIcon } from '@chakra-ui/icons'
 import { useUserStore } from '../../store/userStore'
 import { urlProfile, urlHowitworks, urlContact, urlFaq, urlEditProfile, urlGuides, urlTrips, urlMyTrips, urlCreateTrip } from '../../store/constantsStore'
+import { useTranslation } from 'react-i18next'
 
 export const UserMenu = () => {
+  const { t, i18n } = useTranslation()
   const loginModal = useDisclosure()
   const signupModal = useDisclosure()
   const resetPasswordModal = useDisclosure()
@@ -23,6 +25,13 @@ export const UserMenu = () => {
   const uid = user.uid
   const userIsLogin = user.userIsLogin
   const username = user.username
+  const setSelectedLanguage = useUserStore((state) => state.setSelectedLanguage)
+
+  const changeLanguage = (language: 'es' | 'en') => {
+    setSelectedLanguage(language)
+    i18n.changeLanguage(language)
+  }
+
   return (
   <>
     <Menu closeOnSelect={false}>
@@ -48,8 +57,8 @@ export const UserMenu = () => {
       <>
         <MenuGroup>
           <Flex gap='4' direction='column' p='4' bgColor='#f5f5f5'>
-            <Button onClick={signupModal.onOpen} size='lg' bgColor='white' colorScheme='teal' variant='outline' w='100%'>Sign up</Button>
-            <Button onClick={loginModal.onOpen} size='lg' colorScheme='teal' variant='solid' w='100%'>Log in</Button>
+            <Button onClick={signupModal.onOpen} size='lg' bgColor='white' colorScheme='teal' variant='outline' w='100%'>{t('signup')}</Button>
+            <Button onClick={loginModal.onOpen} size='lg' colorScheme='teal' variant='solid' w='100%'>{t('log-in')}</Button>
           </Flex>
         </MenuGroup>
       </>
@@ -64,38 +73,38 @@ export const UserMenu = () => {
               size='md'
             />
             <Flex direction='column' p='4'>
-              <Text>Hi <Link to={urlProfile+uid}><Text as='b'>@{username}</Text></Link>!</Text>
-              <Link to={urlEditProfile}>Edit profile</Link>
+              <Text>{t('greeting')} <Link to={urlProfile+uid}><Text as='b'>@{username}</Text></Link>!</Text>
+              <Link to={urlEditProfile}>{t('editProfile')}</Link>
             </Flex>
           </Flex>
         </MenuGroup>
         <MenuGroup pt='4'>
-          <MenuItem className='custom-menu-item'><Link to={urlProfile+uid}>My Account</Link></MenuItem>
-          <MenuItem className='custom-menu-item'><Link to={urlMyTrips}>My trips</Link></MenuItem>
-          <MenuItem className='custom-menu-item'><Link to={urlCreateTrip}>Create a trip</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlProfile+uid}>{t('myAccount')}</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlMyTrips}>{t('myTrips')}</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlCreateTrip}>{t('createTrip')}</Link></MenuItem>
         </MenuGroup>
         <MenuDivider />
       </>
       }
         <MenuGroup title='Menu' mx='3'>
-          <MenuItem className='custom-menu-item'><Link to={urlTrips}>Trips</Link></MenuItem>
-          <MenuItem className='custom-menu-item'><Link to={urlGuides}>Guides</Link></MenuItem>
-          <MenuItem className='custom-menu-item'><Link to={urlHowitworks}>How it works?</Link></MenuItem>
-          <MenuItem className='custom-menu-item'><Link to={urlContact}>Contact</Link></MenuItem>
-          <MenuItem className='custom-menu-item'><Link to={urlFaq}>FAQ</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlTrips}>{t('trips')}</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlGuides}>{t('guides')}</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlHowitworks}>{t('howItWorks')}</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlContact}>{t('contact')}</Link></MenuItem>
+          <MenuItem className='custom-menu-item'><Link to={urlFaq}>{t('faq')}</Link></MenuItem>
         </MenuGroup>
         <MenuDivider />
         { userIsLogin &&
         <>
         <MenuGroup>
-          <MenuItem className='custom-menu-item' onClick={useLogout} icon={<LogoutIcon />}>Log out</MenuItem>
+          <MenuItem className='custom-menu-item' onClick={useLogout} icon={<LogoutIcon />}>{t('logout')}</MenuItem>
         </MenuGroup>
         <MenuDivider />
         </>
         }
         <MenuGroup title='Languages' mx='3'>
-          <MenuItem className='custom-menu-item'>English</MenuItem>
-          <MenuItem className='custom-menu-item'>Spanish</MenuItem>
+          <MenuItem className='custom-menu-item' onClick={() => changeLanguage('en')}>{t('english')}</MenuItem>
+          <MenuItem className='custom-menu-item' onClick={() => changeLanguage('es')}>{t('spanish')}</MenuItem>
         </MenuGroup>
       </MenuList>
     </Menu>

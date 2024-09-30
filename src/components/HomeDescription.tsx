@@ -1,10 +1,12 @@
 import { Flex, Text } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 
 export const HomeDescription = () => {
+  const { t } = useTranslation()
   return (
     <Flex py='12'>
       <Text fontSize='xl'>
-        Queremos que encuentres tu viaje ideal, con personas como tú, donde todos los que queráis podáis participar en la organización y gestión del viaje. A un precio justo, sin gastos extra por la organización.
+      {t('homeDescription')}
       </Text>
     </Flex>
   )

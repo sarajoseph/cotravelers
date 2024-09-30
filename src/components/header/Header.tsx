@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import { UserMenu } from './UserMenu'
 import { Container, Flex, Heading, Img } from '@chakra-ui/react'
+import { useTranslation } from 'react-i18next'
 
 export const Header = () => {
+  const { t } = useTranslation()
   const logoUrl = '/images/icon.png'
   return (
     <header className='bg-white'>
@@ -14,10 +16,10 @@ export const Header = () => {
                 src={logoUrl}
                 borderRadius='full'
                 boxSize='80px'
-                alt='Cotravelers'
+                alt={t('cotravelers')}
                 >
               </Img>
-              <Heading variant='h1' as='h1' pr='2'>Cotravelers</Heading>
+              <Heading variant='h1' as='h1' pr='2'>{t('cotravelers')}</Heading>
             </Flex>
           </Link>
           <UserMenu />

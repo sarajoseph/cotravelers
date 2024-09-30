@@ -4,8 +4,10 @@ import { MdPlace } from 'react-icons/md'
 import { useTripFinder } from '../hooks/useTripFinder'
 import { useState } from 'react'
 import { getMonthLastDay } from '../global/logic'
+import { useTranslation } from 'react-i18next'
 
 export const TripFinder = () => {
+  const { t } = useTranslation()
   const { setDepartureMonths, handleFindTrip, handleClickDepartureMonth } = useTripFinder()
   const departureMonths = setDepartureMonths()
   const [ toDate, setToDate ] = useState<string>('')
@@ -17,7 +19,7 @@ export const TripFinder = () => {
         <InputLeftElement pointerEvents='none'>
           <MdPlace size='25' color='#cbcbcb' />
         </InputLeftElement>
-        <Input placeholder='Anywhere' id='findLocation' />
+        <Input placeholder={t('anywhere')} id='findLocation' />
       </InputGroup>
 
       <Popover isOpen={popoverIsOpen} onClose={() => setPopoverIsOpen(false)} placement='bottom'>
@@ -26,13 +28,13 @@ export const TripFinder = () => {
             <InputLeftElement pointerEvents='none'>
               <FaCalendarAlt size='20' color='#cbcbcb' />
             </InputLeftElement>
-            <Input placeholder='Anytime' id='findDate' isReadOnly />
+            <Input placeholder={t('anywhere')} id='findDate' isReadOnly />
           </InputGroup>
         </PopoverTrigger>
         <PopoverContent width={{base: 'xs', sm: 'md'}} px='4' py='4' bgColor='#fbfbfb' maxW='90%'>
           <PopoverBody>
             <Box>
-              <Text textTransform='uppercase' fontWeight='bold' color='#939393'>Departure month</Text>
+              <Text textTransform='uppercase' fontWeight='bold' color='#939393'>{t('departureMonth')}</Text>
               <Divider mt='2' mb='4' />
               <Flex direction='row' gap='4' wrap='wrap'>
                 {departureMonths.map((month: {monthNumber: number, monthName: string, year: number}) =>
@@ -69,7 +71,7 @@ export const TripFinder = () => {
         rightIcon={<FaArrowRight />}
         size='lg'
         onClick={() => handleFindTrip(toDate)}
-      >Find your trip</Button>
+      >{t('findYourTrip')}</Button>
     </Flex>
   )
 }

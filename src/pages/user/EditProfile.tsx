@@ -13,8 +13,11 @@ import { useUserStore } from '../../store/userStore'
 import { useUser } from '../../hooks/useUser'
 import { SelectFileBtn } from '../../components/SelectFileBtn'
 import { NotFound } from '../common/NotFound'
+import { useTranslation } from 'react-i18next'
+import { DocumentData } from 'firebase/firestore'
 
 export const EditProfile = () => {
+  const { t } = useTranslation()
   const toast = useToast()
   const user = useUserStore((state) => ({
     avatar: state.avatar,
@@ -31,7 +34,9 @@ export const EditProfile = () => {
     userIsLogin: state.userIsLogin,
     username: state.username,
     verified: state.verified,
+    selectedLanguage: state.selectedLanguage
   }))
+  const selectedLanguage = user.selectedLanguage
   const { hobbies } = useHobbies()
   const { saveUserData } = useUser()
   const { handleUploadImage, uploadingAvatar, resizeAvatar, validateBirthday } = useProfile()
@@ -71,12 +76,12 @@ export const EditProfile = () => {
       resizeAvatar(imageFile, async (resizedFile: File) => {
         const { success, errorMessage } = await handleUploadImage(resizedFile)
         if (!success) {
-          setErrorUploadingAvatar(errorMessage ? errorMessage : 'Error uploading avatar')
+          setErrorUploadingAvatar(errorMessage ? errorMessage : t('errorUploadingAvatar'))
         } else {
           setErrorUploadingAvatar(false)
           toast({
             title: 'Awesome!',
-            description: 'Image updated succesfully',
+            description: t('imageUpdatedSuccesfully'),
             status: 'success',
             duration: 9000,
             isClosable: true,
@@ -85,7 +90,7 @@ export const EditProfile = () => {
       })
 
     } else {
-      setErrorUploadingAvatar('No file was selected')
+      setErrorUploadingAvatar(t('noFileWasSelected'))
     }
   }, [toast])
 
@@ -150,21 +155,21 @@ export const EditProfile = () => {
       <Flex flexDirection='column' rowGap='5'>
         <Card>
           <CardHeader>
-            <Heading variant='h2' as='h2' fontSize='xl'>Edit profile</Heading>
+            <Heading variant='h2' as='h2' fontSize='xl'>{t('editProfile')}</Heading>
           </CardHeader>
           <CardBody>
             <Flex direction={{ base: 'column', md: 'row'}} columnGap='4' rowGap='4' mb='8'>
               <FormControl>
-                <FormLabel variant='profile'>Username</FormLabel>
+                <FormLabel variant='profile'>{t('username')}</FormLabel>
                 <Input size='md' type='text' value={user.username} readOnly />
               </FormControl>
               <FormControl>
-                <FormLabel variant='profile'>Email</FormLabel>
+                <FormLabel variant='profile'>{t('email')}</FormLabel>
                 <Input size='md' type='text' value={user.public_email} readOnly />
               </FormControl>
             </Flex>
             <FormControl mb='8' isInvalid={!!errorUploadingAvatar}>
-              <FormLabel variant='profile'>Profile image</FormLabel>
+              <FormLabel variant='profile'>{t('profileImage')}</FormLabel>
               <Flex direction={{ base: 'column', md: 'row'}} alignItems={{ base: 'flex-start', md: 'center'}} gap='5'>
                 <Image
                   id='editprofileImage'
@@ -195,16 +200,16 @@ export const EditProfile = () => {
             </FormControl>
             <Flex direction={{ base: 'column', md: 'row'}} columnGap='4' rowGap='4' mb='8'>
               <FormControl isInvalid={!!errors.name}>
-                <FormLabel variant='profile'>Name</FormLabel>
+                <FormLabel variant='profile'>{t('name')}</FormLabel>
                 <InputGroup>
                   <Input
-                    placeholder='Your name'
+                    placeholder={t('yourName')}
                     size='md'
                     type='text'
                     {...register('name', {
                       pattern: {
                         value: /^[A-Za-z]+$/i,
-                        message: 'Name must contain only letters'
+                        message: t('nameMustContainOnlyLetters')
                       }
                     })}
                     onChange={async (e) => {
@@ -222,16 +227,16 @@ export const EditProfile = () => {
                 {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
               </FormControl>
               <FormControl isInvalid={!!errors.surname}>
-                <FormLabel variant='profile'>Surname</FormLabel>
+                <FormLabel variant='profile'>{t('surname')}</FormLabel>
                 <InputGroup>
                   <Input
-                    placeholder='Your surname'
+                    placeholder={t('yourSurname')}
                     size='md'
                     type='text'
                     {...register('surname', {
                       pattern: {
                         value: /^[A-Za-z]+$/i,
-                        message: 'Surname must contain only letters'
+                        message: t('surnameMustContainOnlyLetters')
                       }
                     })}
                     onChange={async (e) => {
@@ -249,10 +254,10 @@ export const EditProfile = () => {
                 {errors.surname && <FormErrorMessage>{errors.surname.message}</FormErrorMessage>}
               </FormControl>
               <FormControl isInvalid={!!errors.birthday}>
-                <FormLabel variant='profile'>Birthday</FormLabel>
+                <FormLabel variant='profile'>{t('birthday')}</FormLabel>
                 <InputGroup>
                   <Input
-                    placeholder='Select date'
+                    placeholder={t('selectDate')}
                     size='md'
                     type='date'
                     {...register('birthday', {
@@ -276,11 +281,11 @@ export const EditProfile = () => {
             </Flex>
             <FormControl mb='8'>
               <Flex alignItems='center'>
-                <FormLabel variant='profile'>Bio</FormLabel>
+                <FormLabel variant='profile'>{t('bio')}</FormLabel>
                 {bioState && renderStatusIcon(bioState)}
               </Flex>
               <Textarea
-                placeholder='Describe yourself here...'
+                placeholder={t('describeYourselfHere...')}
                 defaultValue={user.bio}
                 onChange={async (e) => {
                   setBioState('loading')
@@ -292,7 +297,7 @@ export const EditProfile = () => {
             </FormControl>
             <FormControl mb='8'>
               <Flex alignItems='center' mb='2'>
-                <FormLabel variant='profile'>Hobbies</FormLabel>
+                <FormLabel variant='profile'>{t('hobbies')}</FormLabel>
                 {hobbiesState && renderStatusIcon(hobbiesState)}
               </Flex>
               <CheckboxGroup
@@ -306,7 +311,7 @@ export const EditProfile = () => {
                 }}>
                 <Flex gap='4' direction='row' wrap='wrap'>
                   {hobbies &&
-                    hobbies.map((hobbie: {id: string, name: string, icon: () => JSX.Element}) => {
+                    hobbies.map((hobbie: DocumentData) => {
                       const isChecked = selectedHobbies ? selectedHobbies.includes(hobbie.id) : false
                       return (
                         <Checkbox key={hobbie.id} id={hobbie.id} value={hobbie.id} display='flex'
@@ -318,7 +323,7 @@ export const EditProfile = () => {
                         >
                           <Tag size='lg' colorScheme={isChecked ? 'blue' : 'gray'} padding='3' variant='subtle'>
                             <TagLeftIcon as={hobbie.icon}/>
-                            <TagLabel pl={2}>{hobbie.name}</TagLabel>
+                            <TagLabel pl={2}>{hobbie[selectedLanguage]}</TagLabel>
                           </Tag>
                         </Checkbox>
                       )
@@ -329,7 +334,7 @@ export const EditProfile = () => {
             </FormControl>
             <FormControl mb='8'>
               <Flex alignItems='center' mb='2'>
-                <FormLabel variant='profile'>Countries visited</FormLabel>
+                <FormLabel variant='profile'>{t('countriesVisited')}</FormLabel>
                 {countriesState && renderStatusIcon(countriesState)}
               </Flex>
               <WorldMap

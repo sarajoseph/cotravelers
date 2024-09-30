@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Animals, CineAndTV, Concerts, Cooking, Dancing, Default, Food, Karaoke, Museums, Music, Nature, Reading, Restaurants, Sports, Videogames } from '../components/icons/Hobbies'
 
 export const useHobbies = () => {
+
   const [hobbies, setHobbies] = useState<DocumentData | null>(null)
   useEffect(() => {
     const fetchHobbies = async () => {

@@ -3,14 +3,14 @@ import { AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader,
 import { useState } from 'react'
 import { useTrip } from '../../hooks/useTrip'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export const CancelTripModal = ({tripID, isOpen, cancelRef, onClose}: {tripID: string, isOpen: boolean, cancelRef: any, onClose: () => void}) => {
-
+  const { t } = useTranslation()
   const { cancelTrip } = useTrip()
   const navigate = useNavigate()
   const toast = useToast()
   const [ cancelIsLoading, setCancelIsLoading ] = useState<boolean>(false)
-
 
   const handleCancelTrip = async () => {
     if (!tripID) return
@@ -39,19 +39,19 @@ export const CancelTripModal = ({tripID, isOpen, cancelRef, onClose}: {tripID: s
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-              Cancel trip
+            {t('cancelTrip')}
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure? You can't undo this action afterwards.
+              {t('questionCancelTrip')}
             </AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
-                No, go back
+                {t('noCancelTrip')}
               </Button>
               <Button onClick={handleCancelTrip} isLoading={cancelIsLoading} colorScheme='red' ml={3}>
-                Sure, cancel trip
+                {t('yesCancelTrip')}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

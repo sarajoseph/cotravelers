@@ -7,8 +7,10 @@ import { MdBolt, MdPlace } from 'react-icons/md'
 import { Link, useNavigate } from 'react-router-dom'
 import { formatDate } from '../global/logic'
 import { urlTrip } from '../store/constantsStore'
+import { useTranslation } from 'react-i18next'
 
 export const TripCard = ({trip, isSlide = false}: {trip: any, isSlide?: boolean}) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const isPastTrip = new Date(trip.date_from) < new Date() ? true : false
   const areSpotsTrip = trip.travelers.length < trip.spots ? true : false
@@ -37,7 +39,7 @@ export const TripCard = ({trip, isSlide = false}: {trip: any, isSlide?: boolean}
               borderTopRightRadius='5'
             >
               <TagLeftIcon fontSize='20' as={MdBolt} />
-              <TagLabel fontWeight='bold' textTransform='uppercase'>Full</TagLabel>
+              <TagLabel fontWeight='bold' textTransform='uppercase'>{t('full')}</TagLabel>
             </Tag>
           </Flex>
         }
@@ -53,7 +55,7 @@ export const TripCard = ({trip, isSlide = false}: {trip: any, isSlide?: boolean}
               borderTopRightRadius='5'
             >
               <TagLeftIcon fontSize='20' as={MdBolt} />
-              <TagLabel fontWeight='bold' textTransform='uppercase'>1 spot left</TagLabel>
+              <TagLabel fontWeight='bold' textTransform='uppercase'>1 {t('spotLeft')}</TagLabel>
             </Tag>
           </Flex>
         }
@@ -69,7 +71,7 @@ export const TripCard = ({trip, isSlide = false}: {trip: any, isSlide?: boolean}
               borderTopRightRadius='5'
             >
               <TagLeftIcon fontSize='20' as={MdBolt} />
-              <TagLabel fontWeight='bold' textTransform='uppercase'>Almost full</TagLabel>
+              <TagLabel fontWeight='bold' textTransform='uppercase'>{t('almostFull')}</TagLabel>
             </Tag>
           </Flex>
         }
@@ -110,7 +112,7 @@ export const TripCard = ({trip, isSlide = false}: {trip: any, isSlide?: boolean}
           {!isPastTrip &&
           <Flex>
             <Button as={Link} to={urlTrip+trip.id} w='100%' colorScheme='teal'>
-              See more
+            {t('seeMore')}
             </Button>
           </Flex>
           }

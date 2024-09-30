@@ -16,8 +16,10 @@ import {
 } from '@chakra-ui/react'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 import { handleCloseAndOpenModal, handleCloseModal } from '../../global/logic'
+import { useTranslation } from 'react-i18next'
 
 export const ResetPassword = ({isOpen, onClose, openLoginModal, openSignupModal}: {isOpen: boolean, onClose: () => void, openLoginModal: () => void, openSignupModal: () => void}) => {
+  const { t } = useTranslation()
   const { resetPassword, isSuccess, isLoading, isError, errorMessage, initializeStates } = useResetPassword()
   const initialRef = useRef(null)
   const finalRef = useRef(null)
@@ -36,8 +38,8 @@ export const ResetPassword = ({isOpen, onClose, openLoginModal, openSignupModal}
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading as='h2' fontSize='2xl' pb='1'>Welcome to Cotravelers</Heading>
-          <Heading as='h3' fontSize='sm'>We will send you an email with a link to reset your password</Heading>
+          <Heading as='h2' fontSize='2xl' pb='1'>{t('welcomeToCotravelers')}</Heading>
+          <Heading as='h3' fontSize='sm'>{t('resetPasswordBelow')}</Heading>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -52,7 +54,7 @@ export const ResetPassword = ({isOpen, onClose, openLoginModal, openSignupModal}
             {isSuccess &&
             <Alert status='success'>
               <AlertIcon />
-              The link has been submitted to your inbox successfully
+              {t('resetPasswordSuccess')}
             </Alert>
             }
             <Button
@@ -62,12 +64,12 @@ export const ResetPassword = ({isOpen, onClose, openLoginModal, openSignupModal}
               rightIcon={<ArrowForwardIcon />}
               isLoading={isLoading}
               ref={finalRef}
-            >Send</Button>
+            >{t('send')}</Button>
           </form>
         </ModalBody>
         <ModalFooter className='flex flex-col gap-2 !items-start'>
-          <p>You know your password? <Button onClick={() => handleCloseAndOpenModal(closeModal, openLoginModal)} variant='link'>Login</Button></p>
-          <p>Don't have an account? <Button onClick={() => handleCloseAndOpenModal(closeModal, openSignupModal)} variant='link'>Register here</Button></p>
+          <p>{t('knowYourPassword?')} <Button onClick={() => handleCloseAndOpenModal(closeModal, openLoginModal)} variant='link'>{t('login')}</Button></p>
+          <p>{t('dontHaveAnAccount?')} <Button onClick={() => handleCloseAndOpenModal(closeModal, openSignupModal)} variant='link'>{t('registerHere?')}</Button></p>
         </ModalFooter>
       </ModalContent>
     </Modal>

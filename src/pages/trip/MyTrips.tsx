@@ -10,8 +10,10 @@ import { TripCard } from '../../components/TripCard'
 import { Link as RouterLink } from 'react-router-dom'
 import { urlTrips } from '../../store/constantsStore'
 import { sortByDateFrom } from '../../global/logic'
+import { useTranslation } from 'react-i18next'
 
 export const MyTrips = () => {
+  const { t } = useTranslation()
   const user = useUserStore((state) => ({uid: state.uid}))
   const userID = user.uid
   const { getTripsByUserID } = useTrip()
@@ -48,18 +50,18 @@ export const MyTrips = () => {
 
     return (
       <WebContainer>
-        <Heading mb='8'>My trips</Heading>
+        <Heading mb='8'>{t('myTrips')}</Heading>
         {myTrips.length === 0 &&
         <Text fontSize='lg' textAlign='center'>
-          You don't have trips yet<br/>
-          Go to <ChakraLink as={RouterLink} to={urlTrips} color='cyan.600'> trips page</ChakraLink>
+          {t('youDontHaveTripsYet')}<br/>
+          {t('goTo')} <ChakraLink as={RouterLink} to={urlTrips} color='cyan.600'> {t('tripsPage')}</ChakraLink>
         </Text>
         }
 
         {authorTripsExist &&
         <Box>
           {otherTripsExist && authorTripsExist &&
-          <Heading as='h3' fontSize='3xl' mb='8'>Trips you have created</Heading>}
+          <Heading as='h3' fontSize='3xl' mb='8'>{t('tripsYouHaveCreated')}</Heading>}
           <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
           {authorTrips.map((trip: any) => {
             return <TripCard key={trip.id} trip={trip} />
@@ -75,7 +77,7 @@ export const MyTrips = () => {
         {otherTripsExist &&
         <Box>
           {otherTripsExist && authorTripsExist &&
-          <Heading as='h3' fontSize='3xl' mb='8'>Your trips created by others</Heading>}
+          <Heading as='h3' fontSize='3xl' mb='8'>{t('yourTripsCreatedByOthers')}</Heading>}
           <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
           {otherTrips.map((trip: any) => {
             return <TripCard key={trip.id} trip={trip} />
@@ -90,7 +92,7 @@ export const MyTrips = () => {
 
         {myPastTripsExist &&
         <Box>
-          <Heading as='h3' fontSize='3xl' mb='8'>Your trips from the past</Heading>
+          <Heading as='h3' fontSize='3xl' mb='8'>{t('yourTripsFromThePast')}</Heading>
           <Flex direction={{ base: 'column', lg: 'row' }} columnGap='8' rowGap='8' wrap='wrap'>
           {myPastTrips.map((trip: any) => {
             return <TripCard key={trip.id} trip={trip} />
