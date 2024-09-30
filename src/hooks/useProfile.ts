@@ -1,19 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import { useUser } from './useUser'
 import { db, uploadFileFirebase } from '../firebase/client'
 import { doc, getDoc } from 'firebase/firestore'
 import { useUserStore } from '../store/userStore'
 import { useErrorHandle } from './useErrorHandle'
-import { CommonResponse } from '../global/types'
+import { CommonResponse } from '../global/types/common'
+import { UseProfileProps, ProfileByUIDResponse } from '../global/types/profile'
 
-type ProfileByUIDResponse = {
-  success: boolean
-  profile?: {[x: string]: any}
-  errorMessage?: string
-}
-
-export const useProfile = () => {
+export const useProfile = (): UseProfileProps => {
   const [ uploadingAvatar, setUploadingAvatar ] = useState<boolean>(false)
   const { saveUserData } = useUser()
   const { handleFirebaseError, handleNotFoundError } = useErrorHandle()

@@ -3,55 +3,10 @@ import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, DocumentDa
 import { db } from '../firebase/client'
 import { useErrorHandle } from './useErrorHandle'
 import { useProfile } from './useProfile'
-import { CommonResponse } from '../global/types'
+import { CommonResponse } from '../global/types/common'
 import { useUserStore } from '../store/userStore'
 import { removeAccents } from '../global/logic'
-
-type TripDataProps = {
-  selectedCountry: string
-  fromDate: string
-  toDate: string
-  budgetValue: string
-  spots: number
-  title: string
-  description: string
-}
-
-type EditTripDataProps = TripDataProps & {
-  tripID: string
-  userHostID: string
-  travelers: string
-  createdDate: string
-}
-
-type CreateTripResponse = CommonResponse & {
-  tripID?: string
-}
-
-type GetTripResponse = CommonResponse & {
-  trip?: {[x: string]: any}
-}
-
-type GetAllTripsResponse = CommonResponse & {
-  trips?: {[x: string]: any}
-}
-
-type GetTripsByUserIDResponse = CommonResponse & {
-  userTrips?: {[x: string]: any}
-}
-
-type UseTripProps = {
-  cancelTrip: (tripID: string) => Promise<CommonResponse>
-  createTrip: (tripData: TripDataProps) => Promise<CreateTripResponse>
-  deleteTrip: (tripID: string) => Promise<CommonResponse>
-  editTrip: (tripData: EditTripDataProps) => Promise<CommonResponse>
-  getAllTrips: () => Promise<GetAllTripsResponse>
-  getTrip: (tripID: string, edit?: boolean) => Promise<GetTripResponse>
-  getTripsByDateAndLocation: (toDate: string, location: string) => Promise<GetAllTripsResponse>
-  getTripsByUserID: (user_id: string) => Promise<GetTripsByUserIDResponse>
-  joinTrip: (tripID: string) => Promise<CommonResponse>
-  leaveTrip: (tripID: string) => Promise<CommonResponse>
-}
+import { UseTripProps, TripDataProps, CreateTripResponse, EditTripDataProps, GetAllTripsResponse, GetTripResponse, GetTripsByUserIDResponse } from '../global/types/trips'
 
 export const useTrip = (): UseTripProps => {
   const { handleFirebaseError, handleNotFoundError } = useErrorHandle()
@@ -179,7 +134,7 @@ export const useTrip = (): UseTripProps => {
     }
   }
 
-  const getCountryImage = async (country: string) => {
+  const getCountryImage = async (country: string): Promise<string | null> => {
     const apiKey = 'ZuVcL956xfdWNMZ2v732y70ZSq3FPc_Jm9jo_6yUd3Y'
     const response = await fetch('https://api.unsplash.com/search/photos?query='+country+'&client_id='+apiKey)
     const data = await response.json()

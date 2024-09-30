@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useSignup } from '../../hooks/useSignup'
 import { UsernameField, ErrorFieldMessage, EmailField, PasswordField } from '../forms/FormFields'
-import { FormRegisterInputs } from '../../global/types'
+import { FormRegisterInputs } from '../../global/types/common'
 import { useRef } from 'react'
 import {
   Modal,

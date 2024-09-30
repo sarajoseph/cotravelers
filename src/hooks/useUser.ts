@@ -6,21 +6,8 @@ import { useUserStore } from '../store/userStore'
 import { arrayRemove, collection, deleteDoc, doc, DocumentData, getDoc, getDocs, query, setDoc, updateDoc } from 'firebase/firestore'
 import { FirebaseError } from 'firebase/app'
 import { useErrorHandle } from './useErrorHandle'
-import { CommonResponse } from '../global/types'
-
-type SaveUserDataProps = {
-  photoURL?: string,
-  dataField?: string,
-  dataValue?: string | string[]
-  userUpdated?: DocumentData
-}
-type UseUserProps = {
-  user: DocumentData,
-  firebaseIsLoading: boolean,
-  deleteUser: (userID: string) => Promise<CommonResponse>
-  saveUserData: ({photoURL, dataField, dataValue}: SaveUserDataProps) => Promise<CommonResponse>
-  saveErrorMessage: string | false
-}
+import { CommonResponse } from '../global/types/common'
+import { UseUserProps, SaveUserDataProps } from '../global/types/user'
 
 export const useUser = (): UseUserProps => {
   const { handleFirebaseError, handleNotFoundError } = useErrorHandle()

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand'
-import { UserStore } from '../global/types'
+import { UserProps, UserStore } from '../global/types/common'
 
-const initialUser = {
+const initialUser: UserProps = {
   avatar: '',
   bio: '',
   birthday: '',

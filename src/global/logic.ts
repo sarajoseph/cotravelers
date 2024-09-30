@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { UseFormReset } from 'react-hook-form'
-import { FormRegisterInputs } from './types'
+import { FormRegisterInputs } from './types/common'
 
 export const handleCloseAndOpenModal = (closeModal: () => void, openModal: () => void) => {
   closeModal()

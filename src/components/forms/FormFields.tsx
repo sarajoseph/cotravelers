@@ -1,6 +1,6 @@
 import { UseFormRegister } from 'react-hook-form'
 import { UsernameIcon, EmailIcon, PasswordIcon } from '../icons/UserFieldsIcons'
-import { FormRegisterInputs } from '../../global/types'
+import { FormRegisterInputs } from '../../global/types/common'
 import { Alert, AlertIcon, Button, FormControl, FormLabel, Input, InputGroup, InputLeftElement, InputRightElement } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
