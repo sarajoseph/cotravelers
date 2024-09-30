@@ -19,7 +19,7 @@ export const EditTrip = () => {
   useEffect(() => {
     if (tripID) {
       const fetchTrip = async () => {
-        const { success, trip, errorMessage } = await getTrip(tripID)
+        const { success, trip, errorMessage } = await getTrip(tripID, true)
         if (success && trip){
           setCurrentTrip(trip)
           setCurrentTripState('success')

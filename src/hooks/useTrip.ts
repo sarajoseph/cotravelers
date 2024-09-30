@@ -21,6 +21,7 @@ type EditTripDataProps = TripDataProps & {
   tripID: string
   userHostID: string
   travelers: string
+  createdDate: string
 }
 
 type CreateTripResponse = CommonResponse & {
@@ -45,7 +46,7 @@ type UseTripProps = {
   deleteTrip: (tripID: string) => Promise<CommonResponse>
   editTrip: (tripData: EditTripDataProps) => Promise<CommonResponse>
   getAllTrips: () => Promise<GetAllTripsResponse>
-  getTrip: (tripID: string) => Promise<GetTripResponse>
+  getTrip: (tripID: string, edit?: boolean) => Promise<GetTripResponse>
   getTripsByDateAndLocation: (toDate: string, location: string) => Promise<GetAllTripsResponse>
   getTripsByUserID: (user_id: string) => Promise<GetTripsByUserIDResponse>
   joinTrip: (tripID: string) => Promise<CommonResponse>
@@ -131,6 +132,7 @@ export const useTrip = (): UseTripProps => {
     try {
       const data = {
         country: tripData.selectedCountry,
+        date_created: tripData.createdDate,
         date_from: tripData.fromDate,
         date_to: tripData.toDate,
         spots: tripData.spots,
@@ -184,7 +186,7 @@ export const useTrip = (): UseTripProps => {
     return data.results.length > 0 ? data.results[0].urls.regular : null
   }
 
-  const getTrip = async (tripID: string): Promise<GetTripResponse> => {
+  const getTrip = async (tripID: string, edit: boolean = false): Promise<GetTripResponse> => {
     try {
       const docSnap = await getDoc(doc(db, 'trips', tripID))
       if (docSnap.exists()) {
@@ -201,21 +203,24 @@ export const useTrip = (): UseTripProps => {
           tripData.author_verified = profile.verified
           tripData.author_uid = profile.uid
         }
-        const travelersProfiles = await Promise.all(
-          (tripData.travelers).map(async (traveler: string) => {
-            const { success, profile } = await getProfileByUID(traveler)
-            if (success && profile) {
-              return {
-                username: profile.username,
-                avatar: profile.avatar,
-                uid: profile.uid
-              }
 
-            }
-            return null
-          })
-        )
-        tripData.travelers = travelersProfiles.filter(profile => profile !== null)
+        if (!edit) {
+          const travelersProfiles = await Promise.all(
+            (tripData.travelers).map(async (traveler: string) => {
+              const { success, profile } = await getProfileByUID(traveler)
+              if (success && profile) {
+                return {
+                  username: profile.username,
+                  avatar: profile.avatar,
+                  uid: profile.uid
+                }
+
+              }
+              return null
+            })
+          )
+          tripData.travelers = travelersProfiles.filter(profile => profile !== null)
+        }
 
         return {
           success: true,

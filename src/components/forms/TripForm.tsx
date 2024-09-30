@@ -14,6 +14,7 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
   const toast = useToast()
   const countries = countriesJson.features.map(feature => feature.properties.name)
   const [ selectedCountry, setSelectedCountry ] = useState<string>(oTrip?.country || '')
+  const [ createdDate ] = useState<string>(oTrip?.date_created || '')
   const [ fromDate, setFromDate ] = useState<string>(oTrip?.date_from || '')
   const [ toDate, setToDate ] = useState<string>(oTrip?.date_to || '')
   const [ spots, setSpots ] = useState<number>(oTrip?.spots || 0)
@@ -55,6 +56,7 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
     if (oTrip) {
       const tripData = {
         selectedCountry,
+        createdDate,
         fromDate,
         toDate,
         budgetValue,
