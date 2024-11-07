@@ -31,15 +31,15 @@ $ npm run dev
   
 ## Dependencies  
   
-[<img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" />](https://vitejs.dev)[<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />](https://react.dev)[<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">](https://typescriptlang.org)[<img src="https://img.shields.io/badge/Tailwind_CSS-0b1120?style=for-the-badge&logo=tailwind-css&logoColor=06B6D4">](https://tailwindcss.com)[<img src="https://img.shields.io/badge/eslint-white?style=for-the-badge&logo=eslint&logoColor=4B32C3">](https://eslint.org)[<img src="https://img.shields.io/badge/standardJS-F3DF49?style=for-the-badge&logo=standardJS&logoColor=black">](https://standardjs.com)[<img src="https://img.shields.io/badge/vitest-1b1b1f?style=for-the-badge&logo=vitest&logoColor=fcc72b">](https://vitest.dev)    
+[<img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" />](https://vitejs.dev)[<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />](https://react.dev)[<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">](https://typescriptlang.org)[<img src="https://img.shields.io/badge/Chakra_UI-FFFFFF?style=for-the-badge&logo=chakra-ui&logoColor=teal">](https://chakra-ui.com)[<img src="https://img.shields.io/badge/Tailwind_CSS-0b1120?style=for-the-badge&logo=tailwind-css&logoColor=06B6D4">](https://tailwindcss.com)[<img src="https://img.shields.io/badge/Zustand-FFFFFF?style=for-the-badge&logo=zustand&logoColor=black">](https://zustand.docs.pmnd.rs)[<img src="https://img.shields.io/badge/eslint-white?style=for-the-badge&logo=eslint&logoColor=4B32C3">](https://eslint.org)[<img src="https://img.shields.io/badge/Firebase-FFFFFF?style=for-the-badge&logo=firebase&logoColor=orange">](https://firebase.google.com)
 
 Vite (https://vitejs.dev)  
 ReactJS (https://react.dev)  
 Typescript (https://typescriptlang.org)  
+ChakraUI (https://chakra-ui.com)  
 Tailwind (https://tailwindcss.com)  
+Zustand (https://zustand.docs.pmnd.rs)  
 ESLint (https://eslint.org)  
-TSStandardJS (https://standardjs.com)  
-Vitest (https://vitest.dev)  
 Firebase (https://firebase.google.com)  
   
   
@@ -54,7 +54,7 @@ npx tailwindcss -i ./src/assets/css/tailwind-input.css -o ./src/assets/css/tailw
 ```
   
   
-### ESLint StandardJS test  
+### ESLint test  
   
 Find and fix problems with your JavaScript code
 ```bash
@@ -63,12 +63,4 @@ npx standard
 
 # or
 npm test
-```
-  
-  
-### Test with Vitest    
-  
-```bash
-# Run
-npx vitest
 ```
