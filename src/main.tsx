@@ -7,8 +7,8 @@ import { theme } from './assets/theme'
 import { I18nextProvider } from 'react-i18next'
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import translationEN from '../public/locales/en/translation.json'
-import translationES from '../public/locales/es/translation.json'
+import translationEN from './locales/en/translation.json'
+import translationES from './locales/es/translation.json'
 
 i18next.use(initReactI18next).init({
   resources: {
