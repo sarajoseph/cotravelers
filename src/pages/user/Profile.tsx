@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { NotFound } from '../common/NotFound'
 import { useTranslation } from 'react-i18next'
 import { useUserStore } from '../../store/userStore'
+import parse from 'html-react-parser'
 
 export const Profile = () => {
   const { t } = useTranslation()
@@ -70,14 +71,14 @@ export const Profile = () => {
                 </Flex>
               </Flex>
 
-              <Flex flexDirection='column' rowGap='5' mt='10'>
+              <Flex flexDirection='column' rowGap='14' mt='10'>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
                   {t('bio')}
                   </Heading>
-                  <Text>
-                    {currentProfile.bio}
-                  </Text>
+                  <Box className='richText'>
+                    {parse(currentProfile.bio)}
+                  </Box>
                 </Box>
                 <Box>
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>

@@ -92,6 +92,7 @@
   "title": "Title",
   "tripDescTextarea": "Description of the trip here...",
   "save": "Save",
+  "saveBio": "Save bio",
   "post": "Post",
   "questionCancelTrip": "Are you sure? You can't undo this action afterwards.",
   "noCancelTrip": "No, go back",

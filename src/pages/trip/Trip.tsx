@@ -20,6 +20,7 @@ import { CancelTripModal } from '../../components/modals/CancelTripModal'
 import { PiAirplaneLanding } from 'react-icons/pi'
 import { CgUnavailable } from 'react-icons/cg'
 import { useTranslation } from 'react-i18next'
+import parse from 'html-react-parser'
 
 export const Trip = () => {
   const { t } = useTranslation()
@@ -285,9 +286,9 @@ export const Trip = () => {
                   <Heading as='h3' size='xs' textTransform='uppercase' mb={3}>
                     {t('description')}
                   </Heading>
-                  <Text>
-                    {currentTrip.description}
-                  </Text>
+                  <Box className='richText'>
+                    {parse(currentTrip.description)}
+                  </Box>
                 </Box>
               </Flex>
               <Flex flexDirection='column' rowGap='5' mt='10'>

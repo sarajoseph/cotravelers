@@ -1,4 +1,4 @@
-import { Checkbox, CheckboxGroup, FormControl, FormLabel, Input, Textarea, Image, Card, CardBody, CardHeader, Heading, Tag, Flex, InputGroup, InputRightElement, FormErrorMessage, useToast, TagLabel, TagLeftIcon } from '@chakra-ui/react'
+import { Checkbox, CheckboxGroup, FormControl, FormLabel, Input, Image, Card, CardBody, CardHeader, Heading, Tag, Flex, InputGroup, InputRightElement, FormErrorMessage, useToast, TagLabel, TagLeftIcon, Button } from '@chakra-ui/react'
 import { Loading } from '../../components/icons/Loading'
 import { useProfile } from '../../hooks/useProfile'
 import { useCallback, useEffect, useState } from 'react'
@@ -15,6 +15,8 @@ import { SelectFileBtn } from '../../components/SelectFileBtn'
 import { NotFound } from '../common/NotFound'
 import { useTranslation } from 'react-i18next'
 import { DocumentData } from 'firebase/firestore'
+import { TextEditor } from '../../components/forms/TextEditor'
+import { RiSave3Fill } from 'react-icons/ri'
 
 export const EditProfile = () => {
   const { t } = useTranslation()
@@ -48,6 +50,7 @@ export const EditProfile = () => {
   const [ surnameState, setSurnameState ] = useState<string>()
   const [ birthdayState, setBirthdayState ] = useState<string>()
   const [ bioState, setBioState ] = useState<string>()
+  const [ bioValue, setBioValue ] = useState<string>('')
   const [ hobbiesState, setHobbiesState ] = useState<string>()
   const [ countriesState, setCountriesState ] = useState<string>()
   const [ errorUploadingAvatar, setErrorUploadingAvatar ] = useState<string | false>(false)
@@ -61,6 +64,7 @@ export const EditProfile = () => {
       setValue('name', user.name || '')
       setValue('surname', user.surname || '')
       setValue('birthday', user.birthday || '')
+      setBioValue(user.bio)
       setSelectedHobbies(user.hobbies)
       setCountriesVisited(user.countries || [])
     } else {
@@ -284,16 +288,33 @@ export const EditProfile = () => {
                 <FormLabel variant='profile'>{t('bio')}</FormLabel>
                 {bioState && renderStatusIcon(bioState)}
               </Flex>
-              <Textarea
+              <TextEditor
                 placeholder={t('describeYourselfHere...')}
-                defaultValue={user.bio}
-                onChange={async (e) => {
-                  setBioState('loading')
-                  const bioValue = e.target.value
-                  const { success } = await saveUserData({dataField: 'bio', dataValue: bioValue})
-                  setBioState(success ? 'success' : 'error')
+                value={bioValue}
+                onChange={(content: string) => {
+                  if (content !== bioValue) {
+                    setBioValue(content)
+                  }
                 }}
               />
+              <Flex justify={{ base: 'center', md: 'start' }} mt='2'>
+                <Button
+                  type='submit'
+                  colorScheme='gray'
+                  width={{ base: '100%', md: 'auto' }}
+                  minW='150px'
+                  gap="2"
+                  onClick={ async() => {
+                    setBioState('loading')
+                    const { success } = await saveUserData({dataField: 'bio', dataValue: bioValue})
+                    setBioState(success ? 'success' : 'error')
+                  }}
+                  isLoading={bioState === 'loading' ? true : false}
+                >
+                  <RiSave3Fill size='20' />
+                  {t('saveBio')}
+                </Button>
+              </Flex>
             </FormControl>
             <FormControl mb='8'>
               <Flex alignItems='center' mb='2'>

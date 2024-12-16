@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputRightElement, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, Textarea, useToast } from '@chakra-ui/react'
+import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, InputGroup, InputRightElement, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select, useToast } from '@chakra-ui/react'
 import countriesJson from '../../assets/countries.geo.json'
 import { useState } from 'react'
 import { currentCoin, urlTrip } from '../../store/constantsStore'
 import { useNavigate } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
 import { useTranslation } from 'react-i18next'
+import { TextEditor } from './TextEditor'
 
 export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
   const { t } = useTranslation()
@@ -214,10 +215,10 @@ export const TripForm = ({oTrip}: {oTrip?: {[x: string]: any}}) => {
         <Flex alignItems='center'>
           <FormLabel variant='profile'>{t('description')}</FormLabel>
         </Flex>
-        <Textarea
+        <TextEditor
           placeholder={t('tripDescTextarea')}
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(content: string) => setDescription(content)}
         />
       </FormControl>
       <Flex justify={{ base: 'center', md: 'end' }}>
