@@ -230,25 +230,24 @@ export const useTrip = (): UseTripProps => {
   const getTripsByUserID = async(user_id: string): Promise<GetTripsByUserIDResponse> => {
     try {
       const { success, profile, errorMessage } = await getProfileByUID(user_id)
-      if (success && profile) {
-        const userTrips = await Promise.all(
-          profile.trips.map(async (tripID: string) => {
-            const { success, trip } = await getTrip(tripID)
-            if (success && trip) {
-              trip.id = tripID
-              return trip
-            }
-          })
-        )
 
-        return {
-          success: true,
-          userTrips
-        }
+      if (!success || !profile) return handleNotFoundError(errorMessage || 'No trips found for this user')
 
-      } else {
-        return handleNotFoundError(errorMessage || 'Not trips found for this user')
+      const userTrips = profile.trips && profile.trips.length > 0 ? await Promise.all(
+        profile.trips.map(async (tripID: string) => {
+          const { success, trip } = await getTrip(tripID)
+          if (success && trip) {
+            trip.id = tripID
+            return trip
+          }
+        })
+      ) : null
+
+      return {
+        success: true,
+        userTrips
       }
+
     } catch (error) {
       return handleFirebaseError(error)
     }

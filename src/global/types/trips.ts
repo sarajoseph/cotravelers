@@ -31,7 +31,7 @@ export type GetAllTripsResponse = CommonResponse & {
 }
 
 export type GetTripsByUserIDResponse = CommonResponse & {
-  userTrips?: {[x: string]: any}
+  userTrips?: {[x: string]: any} | null
 }
 
 export type UseTripProps = {
