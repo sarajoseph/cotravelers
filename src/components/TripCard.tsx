@@ -4,27 +4,27 @@ import { FaLongArrowAltRight } from 'react-icons/fa'
 import { FaRegCalendarDays } from 'react-icons/fa6'
 import { IoMdPricetag } from 'react-icons/io'
 import { MdBolt, MdPlace } from 'react-icons/md'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { formatDate } from '../global/logic'
 import { urlTrip } from '../store/constantsStore'
 import { useTranslation } from 'react-i18next'
 
 export const TripCard = ({trip, isSlide = false}: {trip: any, isSlide?: boolean}) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const isPastTrip = new Date(trip.date_from) < new Date() ? true : false
   const areSpotsTrip = trip.travelers.length < trip.spots ? true : false
   const totalAvailableSpots = trip.spots - trip.travelers.length
   const almostFull = totalAvailableSpots > 1 && totalAvailableSpots < 6
   return (
     <Card
+      as={Link}
+      to={urlTrip + trip.id}
       key={trip.id}
       direction='column'
       w='100%'
       justifyContent='space-between'
       maxW={isSlide ? '100%' : {base: '100%', lg: '30%'}}
       cursor='pointer'
-      onClick={() => navigate(urlTrip + trip.id)}
     >
       <CardHeader position='relative' overflow='hidden'>
         {

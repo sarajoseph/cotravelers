@@ -28,7 +28,7 @@ export const TripFinder = () => {
             <InputLeftElement pointerEvents='none'>
               <FaCalendarAlt size='20' color='#cbcbcb' />
             </InputLeftElement>
-            <Input placeholder={t('anywhere')} id='findDate' isReadOnly />
+            <Input placeholder={t('anytime')} id='findDate' isReadOnly />
           </InputGroup>
         </PopoverTrigger>
         <PopoverContent width={{base: 'xs', sm: 'md'}} px='4' py='4' bgColor='#fbfbfb' maxW='90%'>
