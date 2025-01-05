@@ -212,7 +212,7 @@ export const EditProfile = () => {
                     type='text'
                     {...register('name', {
                       pattern: {
-                        value: /^[A-Za-z]+$/i,
+                        value: /^[A-Za-zÁ-ÿá-ÿÑñ\s]+$/,
                         message: t('nameMustContainOnlyLetters')
                       }
                     })}
@@ -239,7 +239,7 @@ export const EditProfile = () => {
                     type='text'
                     {...register('surname', {
                       pattern: {
-                        value: /^[A-Za-z]+$/i,
+                        value: /^[A-Za-zÁ-ÿá-ÿÑñ\s]+$/,
                         message: t('surnameMustContainOnlyLetters')
                       }
                     })}
